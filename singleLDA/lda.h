@@ -4,13 +4,13 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
-#include <vector>
-#include <queue>
-#include "model.h"
+
 #include "utils.h"
 #include "vose.h"
 #include "fTree.h"
 #include "forest.h"
+
+#include "model.h"
 
 class simpleLDA : public model
 {
@@ -44,18 +44,12 @@ public:
 class aliasLDA : public model
 {
 public:
-	std::vector<voseAlias*> q;
+	std::vector<voseAlias> q;
 
 	// estimate LDA model using alias sampling
 	int specific_init();
 	int sampling(int m);
 	void generateQtable(int i);
-
-	~aliasLDA() 
-	{
-		for(int w=0; w<V; ++w)
-			delete q[w];
-	}
 };
 
 class FTreeLDA : public model
@@ -87,5 +81,6 @@ public:
 	int specific_init();
 	int sampling(int m);
 	void generateQtable(int i);
+
 };
 #endif

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-DATASETS="pubmed" #"nytimes"
-METHODS="aliasLDA" # "FTreeLDA sparseLDA lightLDA"
+DATASETS="pubmed" 
+METHODS="aliasLDA FTreeLDA sparseLDA lightLDA"
 NUM_ITER="1000"
 NUM_TOPICS="1024"
 NST="28"
@@ -16,26 +16,17 @@ do
 	DIR_NAME='res'/$DATASET/$METHOD/$time_stamp/
 	mkdir -p $DIR_NAME
 
-	#Display details about current experiment
-	echo 'Running LDA inference using' $METHOD
-	echo 'For dataset' $DATASET
-	echo 'For number of iterations' $NUM_ITER
-	echo 'For number of topics' $NUM_TOPICS
-	echo 'with results being stored in' $DIR_NAME
-	echo 'Using '$NST' sampling thread on c4.8x'
-	echo 'Using '$NTT' updating thread on c4.8x'
-
 	#save details about experiments in an about file
-	`echo 'Running LDA inference using' $METHOD > $DIR_NAME/log.txt`
-	`echo 'For dataset' $dataset >> $DIR_NAME/log.txt`
-	`echo 'For number of iterations' $NUM_ITER >> $DIR_NAME/log.txt`
-	`echo 'For number of topics' $NUM_TOPICS >> $DIR_NAME/log.txt`
-	`echo 'Using '$NST' sampling thread on c4.8x' >> $DIR_NAME/log.txt`
-	`echo 'Using '$NTT' updating thread on c4.8x' >> $DIR_NAME/log.txt`
-
+	`echo 'Running LDA inference using' $METHOD | tee -a $DIR_NAME/log.txt`
+	`echo 'For dataset' $dataset | tee -a $DIR_NAME/log.txt`
+	`echo 'For number of iterations' $NUM_ITER | tee -a $DIR_NAME/log.txt`
+	`echo 'For number of topics' $NUM_TOPICS | tee -a $DIR_NAME/log.txt`
+	echo 'with results being stored in' $DIR_NAME
+	`echo 'Using '$NST' sampling thread on c4.8x' | tee -a $DIR_NAME/log.txt`
+	`echo 'Using '$NTT' updating thread on c4.8x' | tee -a $DIR_NAME/log.txt`
 
 	#run
-	./"$METHOD" -net -nst $NST -ntt $NTT -ntopics $NUM_TOPICS -niters $NUM_ITER -odir $DIR_NAME -twords 15 -dfile ../data/"$DATASET".train -tfile "$DATASET".test | tee -a $DIR_NAME/log.txt
+	./LDA --method "$METHOD" --testing-mode net --num-sampling-threads $NST --num-table-threads $NTT --num-topics $NUM_TOPICS --num-iterations $NUM_ITER --output-model $DIR_NAME --num-top-words 15 --training-file ../data/"$DATASET".train --testing-file "$DATASET".test | tee -a $DIR_NAME/log.txt
 done
 done
 

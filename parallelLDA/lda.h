@@ -6,11 +6,13 @@
 #include <chrono>
 #include <vector>
 #include <queue>
+
 #include "model.h"
 #include "utils.h"
 #include "vose.h"
 #include "fTree.h"
 #include "forest.h"
+#include "shared_mutex.h"
 
 class simpleLDA : public model
 {
@@ -31,6 +33,7 @@ public:
 class sparseLDA : public model
 {
 public:
+	shared_mutex* smtx;
 	std::vector< std::vector< std::pair<int, int> > > nws;
 	
 	// estimate LDA model using sparse strategy of Yao09

@@ -1,15 +1,7 @@
 #ifndef _UTILS_H
 #define _UTILS_H
 
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
-#include <map>
 #include <random>
-
-#include "constants.h"
-#include "strtokenizer.h"
 
 #ifdef _MSC_VER
 
@@ -20,26 +12,9 @@ typedef unsigned __int64 uint64_t;
 
 #endif
 
-// map of words/terms [string => int]
-typedef std::map<std::string, int> mapword2id;
-// map of words/terms [int => string]
-typedef std::map<int, std::string> mapid2word;
-
 class utils
 {
 public:
-	// reading and writing wordmaps
-	static int write_wordmap(std::string wordmapfile, mapword2id * pword2id);
-	static int read_wordmap(std::string wordmapfile, mapword2id * pword2id);
-	static int read_wordmap(std::string wordmapfile, mapid2word * pid2word);
-
-	// sort    
-	static void sort(std::vector<double> & probs, std::vector<int> & words);
-	static void quicksort(std::vector<std::pair<int, double> > & vect, int left, int right);
-	static void quicksort(std::vector<std::pair<int, int> > & vect, int left, int right);
-	// binary search for key index
-	static int binary_search(double A[], double key, int imin, int imax);
-
 	// random number generators
 	inline static std::mt19937 & urng()
 	{
@@ -50,8 +25,8 @@ public:
 	inline static void randomize()
 	{
 		static std::random_device rd{};
-		urng().seed(rd());
-		//urng().seed(3);
+		//urng().seed(rd());
+		urng().seed(3);
 	}
 
 	inline static double unif01()
