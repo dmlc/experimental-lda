@@ -34,7 +34,7 @@ LDA : stringtokenizer.o dataset.o fTree.o forest.o vose.o utils.o model.o lda.o 
 	$(CC) $(LFLAGS) source.o lda.o model.o fTree.o forest.o vose.o utils.o stringtokenizer.o dataset.o -o "LDA"
 
 source.o : source.cpp lda.h
-	$(CC) $(CFLAGS) source0.cpp
+	$(CC) $(CFLAGS) source.cpp
 
 lda.o : lda.h lda.cpp model.h $(CDIR)/fTree.h $(CDIR)/forest.h $(CDIR)/vose.h $(CDIR)/utils.h
 	$(CC) $(CFLAGS) lda.cpp
@@ -52,7 +52,7 @@ vose.o : $(CDIR)/vose.h $(CDIR)/vose.cpp $(CDIR)/utils.h
 	$(CC) $(CFLAGS) $(CDIR)/vose.cpp
 
 dataset.o : $(CDIR)/dataset.h $(CDIR)/dataset.cpp $(CDIR)/stringtokenizer.h
-	$(CC) $(CFLAGS) dataset.cpp
+	$(CC) $(CFLAGS) $(CDIR)/dataset.cpp
 
 utils.o : $(CDIR)/utils.h $(CDIR)/utils.cpp $(CDIR)/stringtokenizer.h
 	$(CC) $(CFLAGS) $(CDIR)/utils.cpp
