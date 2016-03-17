@@ -21,7 +21,7 @@ We will show how to run our LDA on an [UCI bag of words dataset](https://archive
 1. First of all compile by hitting make
    ```bash
      make
-     ```
+   ```
    if you have Intel Compiler, then you can instead
    ```bash
      make intel
