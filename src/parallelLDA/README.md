@@ -57,7 +57,9 @@ Output files:
 To compile the program:
 On Linux:
 1. Use Intel compiler for much better performance: simply hit make intel
+
 2. If you do not have Intel compiler: hit make
+
 On Windows:
 TO-DO
 
