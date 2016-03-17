@@ -14,10 +14,13 @@ The command line arguments are very similar to that of MALLET.
 
 Command line:
 
+```bash
 $ ./parallelLDA --method xxx --testing-mode yyy [--num-sampling-threads <int>] [--num-table-threads <int>] [--alpha <real+>] [--beta <real+>] [--num-topics <int>] [--num-iterations <int>] [--output-state-interval <int>] [--output-model <string>] [--num-top-words <int>] --dataset <string>
+```
 
 in which (parameters in [] are optional):
 
+```bash
 --method xxx:
   xxx can be {simpleLDA, sparseLDA, aliasLDA, FTreeLDA, lightLDA} corresponding to the five methods described above.
 --testing-mode yyy:
@@ -42,6 +45,7 @@ in which (parameters in [] are optional):
   The number of most likely words for each topic. The default value is zero. 
 --dataset <string>:
   The input training data file and optionally the input test data file. The files must named as <string>.train and <string>.test. Data format described in readme under data folder.
+```
 
 Output files:
 1. *.time: The time taken for each iteration
