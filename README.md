@@ -16,7 +16,7 @@
 4. `build` and `dist` folder will be created to hold the executables
  
 ## How to use
-We can 
+We will show how to run our LDA on an [UCI bag of words dataset](https://archive.ics.uci.edu/ml/datasets/Bag+of+Words)
 1. First of all compile by hitting make
 ```bash
   make
@@ -33,18 +33,15 @@ or clean individually by
 ```bash
   make clean-<module-name>
   ```
-
 2. Download example dataset from UCI repository. For this a script has been provided.
 ```bash
   scripts/get_data.sh
   ```
-  
 3. Prepare the data for our program
 ```bash
   scripts/prepare.sh data/nytimes 0
   ```
-For other datasets replace nytimes with 
-
+For other datasets replace nytimes with dataset name or location.
 4. Run LDA!
 ```bash
   scripts/lda_runner.sh
