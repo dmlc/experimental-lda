@@ -62,4 +62,9 @@ We will show how to run our LDA on an [UCI bag of words dataset](https://archive
      scripts/lda_runner.sh
    ```
 
-   Inside the `lda_runner.sh` all the parameters e.g. number of topics, hyperparameters of the LDA, number of threads etc. can be specified. By default the outputs are stored under `out/`.
+   Inside the `lda_runner.sh` all the parameters e.g. number of topics, hyperparameters of the LDA, number of threads etc. can be specified. By default the outputs are stored under `out/`. Also you can specify which inference algorithm of LDA you want to run:
+   1. `simpleLDA`: Plain vanilla Gibbs sampling
+   2. `sparseLDA`: Sparse LDA of Yao09
+   3. `aliasLDA`: Alias LDA
+   4. `FTreeLDA`: F++LDA
+   5. `lightLDA`: light LDA of Yuan14
