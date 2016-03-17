@@ -17,33 +17,34 @@
  
 ## How to use
 We will show how to run our LDA on an [UCI bag of words dataset](https://archive.ics.uci.edu/ml/datasets/Bag+of+Words)
+
 1. First of all compile by hitting make
-```bash
-  make
-  ```
-if you have Intel Compiler, then you can instead
-```bash
-  make intel
-  ```
-Also you can selectively compile individual modules by specifying
-```bash
-  make <module-name>
-  ```
-or clean individually by
-```bash
-  make clean-<module-name>
-  ```
+   ```bash
+     make
+     ```
+   if you have Intel Compiler, then you can instead
+   ```bash
+     make intel
+     ```
+   Also you can selectively compile individual modules by specifying
+   ```bash
+     make <module-name>
+     ```
+   or clean individually by
+   ```bash
+     make clean-<module-name>
+     ```
 2. Download example dataset from UCI repository. For this a script has been provided.
-```bash
-  scripts/get_data.sh
-  ```
+   ```bash
+     scripts/get_data.sh
+     ```
 3. Prepare the data for our program
-```bash
-  scripts/prepare.sh data/nytimes 0
-  ```
-For other datasets replace nytimes with dataset name or location.
+   ```bash
+     scripts/prepare.sh data/nytimes 0
+     ```
+   For other datasets replace nytimes with dataset name or location.
 4. Run LDA!
-```bash
-  scripts/lda_runner.sh
-  ```
-Inside the `lda_runner.sh` all the parameters e.g. number of topics, hyperparameters of the LDA, number of threads etc. can be specified. By default the outputs are stored under `out/`.
+   ```bash
+     scripts/lda_runner.sh
+     ```
+   Inside the `lda_runner.sh` all the parameters e.g. number of topics, hyperparameters of the LDA, number of threads etc. can be specified. By default the outputs are stored under `out/`.
