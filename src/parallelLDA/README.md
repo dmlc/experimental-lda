@@ -48,6 +48,7 @@ in which (parameters in [] are optional):
 ```
 
 Output files:
+
 1. *.time: The time taken for each iteration
 2. *.twords: The top words in each topic
 3. *.llh: The likelihood after each iteration
@@ -56,11 +57,12 @@ Output files:
 
 To compile the program:
 On Linux:
-1. Use Intel compiler for much better performance: simply hit make intel
 
+1. Use Intel compiler for much better performance: simply hit make intel
 2. If you do not have Intel compiler: hit make
 
 On Windows:
+
 TO-DO
 
 Also we have provided an example script "lda-runner.sh" to run the LDA on UCI datasets located at ../data and processed according to readme file therein.
