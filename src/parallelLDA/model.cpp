@@ -568,7 +568,7 @@ double model::newllhw() const
         }
         sum += dsum - testdata->docs[m]->length*log(testdata->docs[m]->length + alpha);
     }
-    return exp( -sum / num_tokens );
+    return ( sum / num_tokens );
 }
 
 double model::llhw() const
@@ -597,7 +597,7 @@ double model::llhw() const
             nd_m[k.idx] = 0;
     }
     delete[] nd_m;
-    return exp( -sum / num_tokens );
+    return ( sum / num_tokens );
 }
 
 int model::save_model(unsigned iter) const
