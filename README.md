@@ -17,7 +17,7 @@
 
 
 ## Requirements
-1. gcc >= 5.0 or Intel Compiler 2016
+1. gcc >= 5.0 or Intel Compiler 2016 for using C++14 features
 
 ## How to use
 We will show how to run our LDA on an [UCI bag of words dataset](https://archive.ics.uci.edu/ml/datasets/Bag+of+Words)
