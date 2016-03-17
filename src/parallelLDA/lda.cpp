@@ -102,7 +102,7 @@ int simpleLDA::sampling(unsigned i)
 
 int sparseLDA::specific_init()
 {
-    //smtx = new shared_mutex[V];
+    smtx = new shared_mutex[V];
     std::cout << "Converting to sparseLDA data structure ..." << std::endl;
     nws.resize(V);
     for (unsigned v = 0; v < V; ++v)
@@ -259,8 +259,9 @@ int sparseLDA::sampling(unsigned i)
                     nd_m[topic] += 1;
                     if (nd_m[old_topic] == 0)
                     {
-                            n_mks[m].erase_pos(rev_mapper[old_topic]);
-                            rev_mapper[old_topic] = -1;
+			unsigned short pos = n_mks[m].erase_pos(rev_mapper[old_topic]);
+                        rev_mapper[pos] = rev_mapper[old_topic];
+                        rev_mapper[old_topic] = -1;                        
                     }
 
                     cbuff[nst*(w%ntt)+i].push(delta(w,old_topic,topic));
