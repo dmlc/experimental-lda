@@ -55,7 +55,7 @@ We will show how to run our LDA on an [UCI bag of words dataset](https://archive
 3. Prepare the data for our program
 
    ```bash
-     scripts/prepare.sh data/nytimes 0
+     scripts/prepare.sh data/nytimes 1
    ```
 
    For other datasets replace nytimes with dataset name or location.
