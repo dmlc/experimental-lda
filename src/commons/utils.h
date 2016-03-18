@@ -42,27 +42,27 @@ public:
 	static int coin_toss(double p);
 	static int pick_a_number(int from, int thru);
 
-//	// discrete logarithm
-//	inline static short discreteLog(int v)
-//	{
-//		union { unsigned u[2]; double d; } t;
-//		t.u[1] = 0x43300000;
-//		t.u[0] = v;
-//		t.d -= 4503599627370496.0;
-//		//short r = (t.u[1] >> 20) - 0x3FF;
-//		//return r;
-//		short r = (t.u[1] >> 20);
-//		return r&0x7F;
-//	}
-//	inline static short discreteLog(double v)
-//	{
-//		int64_t L = *(int64_t*)&v;
-//		L = L >> 52;
-//		// short r = (L & 0x7FF) - 0x3FF;
-//		// return  r;
-//		short r = (L & 0x7F);
-//		return  r;
-//	}
+	// discrete logarithm
+	inline static short discreteLog(int v)
+	{
+		union { unsigned u[2]; double d; } t;
+		t.u[1] = 0x43300000;
+		t.u[0] = v;
+		t.d -= 4503599627370496.0;
+		//short r = (t.u[1] >> 20) - 0x3FF;
+		//return r;
+		short r = (t.u[1] >> 20);
+		return r&0x7F;
+	}
+	inline static short discreteLog(double v)
+	{
+		int64_t L = *(int64_t*)&v;
+		L = L >> 52;
+		// short r = (L & 0x7FF) - 0x3FF;
+		// return  r;
+		short r = (L & 0x7F);
+		return  r;
+	}
 
 	static int read_wordmap(std::string wordmapfile, std::map<std::string, unsigned> * pword2id);
 	static int write_wordmap(std::string wordmapfile, std::map<std::string, unsigned> * pword2id);
