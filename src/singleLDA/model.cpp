@@ -2,240 +2,211 @@
 #include "lda.h"
 #include <sstream>
 
-#define COMP_LLH 1
-
 model::model() 
 {
-	testing_type = INVALID;
-	
-	trngdata = NULL;
-	testdata = NULL;
+    testing_type = INVALID;
 
-	M = 0;
-	V = 0;
-	K = 100;
+    trngdata = NULL;
+    testdata = NULL;
 
-	alpha = 50.0 / K;
-	beta = 0.1;
+    M = 0;
+    V = 0;
+    K = 100;
 
-	z = NULL;
-	n_wk = NULL;
-	n_k = NULL;
+    alpha = 50.0;
+    alphaK = 0;
+    beta = 0.1;
+    Vbeta = 0;
 
-	p = NULL;
-	nd_m = NULL;
-	rev_mapper = NULL;
+    z = NULL;
+    n_wk = NULL;
+    n_k = NULL;
 
-	n_iters = 1000;
-	n_save = 200;
-	n_topWords = 0;
+    p = NULL;
+    nd_m = NULL;
+    rev_mapper = NULL;
 
-	test_n_iters = 10;
-	test_M = 0;
-	test_z = NULL;
-	test_n_wk = NULL;
-	test_n_mk = NULL;
-	test_n_k = NULL;
+    n_iters = 100;
+    n_save = 200;
+    n_topWords = 0;
 
-	time_ellapsed.reserve(50);
-	likelihood.reserve(50);
+    test_n_iters = 10;
+    test_M = 0;
+    test_z = NULL;
+    test_n_mk = NULL;
 
+    time_ellapsed.reserve(50);
+    likelihood.reserve(50);
+
+    name = "";
     ddir = "./";
-	mdir = "./";
-	dfile = "";
-	tfile = "";
+    mdir = "./";
+    dfile = "";
+    tfile = "";
+    vfile = "";	
 }
 
 model::~model()
 {
-	if (trngdata) delete trngdata;
-	if (testdata) delete trngdata;
+    if (trngdata) delete trngdata;
+    if (testdata) delete testdata;
 	
 	
-	if (z)
-	{
-		for (int m = 0; m < M; m++)
-		{
-			if (z[m])
-			{
-				delete[] z[m];
-			}
-		}
-		delete[] z;
-	}
+    if (z)
+    {
+        for (int m = 0; m < M; m++)
+        {
+            if (z[m])
+            {
+                delete[] z[m];
+            }
+        }
+        delete[] z;
+    }
 
-	if (n_wk)
-	{
-		for (int w = 0; w < V; ++w)
-		{
-			if (n_wk[w])
-			{
-				delete[] n_wk[w];
-			}
-		}
-		delete[] n_wk;
-	}
+    if (n_wk)
+    {
+        for (int w = 0; w < V; ++w)
+        {
+            if (n_wk[w])
+            {
+                delete[] n_wk[w];
+            }
+        }
+        delete[] n_wk;
+    }
 
-	if (n_k)	delete[] n_k;
-
-
-	if (p)		delete[] p;
-	if (nd_m)	delete[] nd_m;
-	if (rev_mapper)	delete[] rev_mapper;
+    if (n_k)	delete[] n_k;
 
 
-	if (test_z)
-	{
-		for (int m = 0; m < test_M; m++)
-		{
-			if (test_z[m])
-			{
-				delete[] test_z[m];
-			}
-		}
-		delete[] test_z;
-	}
+    if (p)		delete[] p;
+    if (nd_m)           delete[] nd_m;
+    if (rev_mapper)	delete[] rev_mapper;
 
-	if (test_n_wk)
-	{
-		for (int w = 0; w < V; w++)
-		{
-			if (test_n_wk[w])
-			{
-				delete[] test_n_wk[w];
-			}
-		}
-		delete[] test_n_wk;
-	}
 
-	if (test_n_mk)
-	{
-		for (int m = 0; m < test_M; m++)
-		{
-			if (test_n_mk[m])
-			{
-				delete[] test_n_mk[m];
-			}
-		}
-		delete[] test_n_mk;
-	}
+    if (test_z)
+    {
+        for (int m = 0; m < test_M; m++)
+        {
+                if (test_z[m])
+                {
+                        delete[] test_z[m];
+                }
+        }
+        delete[] test_z;
+    }
 
-	if (test_n_k)	delete[] test_n_k;
+    if (test_n_mk)
+    {
+            for (int m = 0; m < test_M; m++)
+            {
+                    if (test_n_mk[m])
+                    {
+                            delete[] test_n_mk[m];
+                    }
+            }
+            delete[] test_n_mk;
+    }
 
 }
 
 model* model::init(int argc, char ** argv)
 {
-	model *lda = NULL;
+    model *lda = NULL;
 
-	std::vector<std::string> arguments(argv, argv + argc);
-	for (auto arg = arguments.begin(); arg != arguments.end() - 1; ++arg)
-	{
-		if (*arg == "--method")
-		{
-			if (*(arg + 1) == "simpleLDA")
-			{
-				lda = new simpleLDA;
-				std::cout << "Running LDA inference using simpleLDA" << std::endl;
-			}
-			else if (*(arg + 1) == "unifLDA")
-			{
-				lda = new unifLDA;
-				std::cout << "Running LDA inference using unifLDA" << std::endl;
-			}
-			else if (*(arg + 1) == "sparseLDA")
-			{
-				lda = new sparseLDA;
-				std::cout << "Running LDA inference using sparseLDA" << std::endl;
-			}
-			else if (*(arg + 1) == "aliasLDA")
-			{
-				lda = new aliasLDA;
-				std::cout << "Running LDA inference using aliasLDA" << std::endl;
-			}
-			else if (*(arg + 1) == "FTreeLDA")
-			{
-				lda = new FTreeLDA;
-				std::cout << "Running LDA inference using FTreeLDA" << std::endl;
-			}
-			else if (*(arg + 1) == "forestLDA")
-			{
-				lda = new forestLDA;
-				std::cout << "Running LDA inference using forestLDA" << std::endl;
-			}
-			else if (*(arg + 1) == "lightLDA")
-			{
-				lda = new lightLDA;
-				std::cout << "Running LDA inference using lightLDA" << std::endl;
-			}
-			else
-			{
-				lda = NULL;
-				std::cout << "Error: Invalid method algorithm!" << std::endl;
-				return NULL;
-			}
-		}
-	}
+    std::vector<std::string> arguments(argv, argv + argc);
+    for (auto arg = arguments.begin(); arg != arguments.end() - 1; ++arg)
+    {
+        if (*arg == "--method")
+        {
+            if (*(arg + 1) == "simpleLDA")
+            {
+                lda = new simpleLDA;
+                std::cout << "Running LDA inference using simpleLDA" << std::endl;
+            }
+            else if (*(arg + 1) == "unifLDA")
+            {
+                lda = new unifLDA;
+                std::cout << "Running LDA inference using unifLDA" << std::endl;
+            }
+            else if (*(arg + 1) == "sparseLDA")
+            {
+                lda = new sparseLDA;
+                std::cout << "Running LDA inference using sparseLDA" << std::endl;
+            }
+            else if (*(arg + 1) == "aliasLDA")
+            {
+                lda = new aliasLDA;
+                std::cout << "Running LDA inference using aliasLDA" << std::endl;
+            }
+            else if (*(arg + 1) == "FTreeLDA")
+            {
+                lda = new FTreeLDA;
+                std::cout << "Running LDA inference using FTreeLDA" << std::endl;
+            }
+            else if (*(arg + 1) == "forestLDA")
+            {
+                lda = new forestLDA;
+                std::cout << "Running LDA inference using forestLDA" << std::endl;
+            }
+            else if (*(arg + 1) == "lightLDA")
+            {
+                lda = new lightLDA;
+                std::cout << "Running LDA inference using lightLDA" << std::endl;
+            }
+            else
+            {
+                throw std::runtime_error("Error: Invalid inference algorithm!");
+            }
+        }
+    }
 
-	if (lda != NULL)
-	{
-		// call parse_args
-		if (lda->parse_args(arguments))
-		{
-			return NULL;
-		}
+    if (lda != NULL)
+    {
+        // call parse_args
+        lda->parse_args(arguments);
+            
+        // read data
+        lda->read_data();
+    }
+    else
+    {
+        throw std::runtime_error("Error: Inference algorithm not specified!");
+    }
 
-		// read data
-		if (lda->read_data())
-		{
-			return NULL;
-		}
-	}
-	else
-	{
-		lda = NULL;
-		std::cout << "Error: Method algorithm not specified!" << std::endl;
-		return NULL;
-	}
-
-	return lda;
+    return lda;
 }
 
 int model::train()
 {
-	if (specific_init())
-		return 1;
+    std::cout << "Testing at start" << std::endl;
+    std::fill(rev_mapper,rev_mapper+K, K);
 
-	std::chrono::high_resolution_clock::time_point ts, tn;
-	std::cout << "Sampling " << n_iters << " iterations!" << std::endl;
+    std::chrono::high_resolution_clock::time_point ts, tn; ts=tn;
+    std::cout << "Sampling " << n_iters << " iterations!" << std::endl;
+    for (unsigned iter = 0; iter < n_iters; ++iter)
+    {
+        if (iter % n_save == 0)
+        {
+            time_ellapsed.push_back(std::chrono::duration_cast<std::chrono::milliseconds>(tn - ts).count());
+            test();
+            // saving the model
+            std::cout << "Saving the model at iteration " << iter << "..." << std::endl;
+            save_model(iter);
+        }
+        
+        std::cout << "Iteration " << iter << " ..." << std::endl;
+        ts = std::chrono::high_resolution_clock::now();
 
-	for (int iter = 1; iter <= n_iters; ++iter)
-	{
-		std::cout << "Iteration " << iter << " ..." << std::endl;
-		ts = std::chrono::high_resolution_clock::now();
+        // for each document
+        for (unsigned m = 0; m < M; ++m)
+                sampling(m);
 
-		// for each document
-		for (int m = 0; m < M; ++m)
-			sampling(m);
-
-		tn = std::chrono::high_resolution_clock::now();
-		time_ellapsed.push_back(std::chrono::duration_cast<std::chrono::milliseconds>(tn - ts).count());
-
-#if COMP_LLH
-		test();
-#endif
-
-		if (n_save > 0)
-		{
-			if (iter % n_save == 0)
-			{
-				// saving the model
-				std::cout << "Saving the model at iteration " << iter << "..." << std::endl;
-				save_model(iter);
-			}
-		}
+        tn = std::chrono::high_resolution_clock::now();
+        //std::cout << "\rLDA: M = " << M << ", K = " << K << ", V = " << V << ", alpha = "
+	//	  << alpha << ", beta = " << beta << std::endl; //
 	}
-
+        test();
 	std::cout << "Gibbs sampling completed!" << std::endl;
 	std::cout << "Saving the final model!" << std::endl;
 	save_model(-1);
@@ -245,716 +216,488 @@ int model::train()
 
 int model::test()
 {
-	if (testing_type == SELF_TEST)
-	{
-		// just do MAP estimates
-		likelihood.push_back(llhw());
-		std::cout << "Likelihood on training documents: " << likelihood.back() << " at time " << time_ellapsed.back() << std::endl;
-	}
-	else if (testing_type == SEPARATE_TEST)
-	{
-		for (int iter = 1; iter <= test_n_iters; ++iter)
-		{
-			// for each doc
-			for (int m = 0; m < test_M; m++)
-				vanilla_sampling(m);
-		}
-		likelihood.push_back(newllhw());
-		std::cout << "Likelihood on held out documents: " << likelihood.back() << " at time " << time_ellapsed.back() << std::endl;
-	}
-	return 0;
+    if (testing_type == SELF_TEST)
+    {
+        // just do MAP estimates
+        likelihood.push_back(llhw());
+        std::cout << "Likelihood on training documents: " << likelihood.back() << " at time " << time_ellapsed.back() << std::endl;
+    }
+    else if (testing_type == SEPARATE_TEST)
+    {
+        for (unsigned iter = 0; iter < test_n_iters; ++iter)
+        {
+            // for each doc
+            for (int m = 0; m < test_M; m++)
+            {
+                for (int n = 0; n < testdata->docs[m]->length; n++)
+                {
+                    unsigned w = testdata->docs[m]->words[n];
+
+                    // remove z_i from the count variables
+                    int topic = test_z[m][n];
+                    test_n_mk[m][topic] -= 1;
+
+                    double psum = 0;
+                    // do multinomial sampling via cumulative method
+                    for (int k = 0; k < K; k++)
+                    {
+                        psum += (test_n_mk[m][k] + alphaK) * (n_wk[w][k] + beta) / (n_k[k] + Vbeta);
+                        p[k] = psum;
+                    }
+
+                    // scaled sample because of unnormalized p[]
+                    double u = rng_.rand_double() * psum;
+                    topic = std::lower_bound(p, p+K, u) - p;
+
+                    // add newly estimated z_i to count variables
+                    test_n_mk[m][topic] += 1;
+                    test_z[m][n] = topic;
+                }
+            }
+        }
+        likelihood.push_back(newllhw());
+        std::cout << "Likelihood on held out documents: " << likelihood.back() << " at time " << time_ellapsed.back() << std::endl;
+    }
+    return 0;
 }
 
 int model::read_data()
 {
-	utils::randomize();
+    std::ifstream fin;
+	
+    // read training data
+    trngdata = new dataset;
+    fin.open(ddir + dfile, std::ios::binary);
+    trngdata->read(fin);
+    fin.close();
+    M = trngdata->M;
+    utils::read_wordmap(ddir + vfile, &word2id);
+    V = word2id.size();
 
-	// read training data
-	trngdata = new dataset;
-	if (trngdata->read_data(ddir + dfile, &word2id))
-	{
-		std::cout << "Fail to read training data!\n";
-		return 1;
-	}
-
-	// according to testing type initialise
-	if (testing_type == NO_TEST || testing_type == SELF_TEST)
-	{
-		M = trngdata->M;
-		V = trngdata->V;
-
-		// randomly initialise model variables for training
-		std::cout << "Now randomly initialising model variables for training" << std::endl;
-		if (init_train())
-		{
-			std::cout << "Error: Failed to allocate model variables!" << std::endl;
-			return 1;
-		}
-	}
-	else if (testing_type == SEPARATE_TEST)
-	{
-		// read held-out testing data
-		testdata = new dataset;
-		if (testdata->read_data(ddir + tfile, &word2id))
-		{
-			std::cout << "Error: Failed to read training corpus!" << std::endl;
-			return 1;
-		}
-		M = trngdata->M;
-		test_M = testdata->M;
-		V = testdata->V;
-		trngdata->V = V;
-
-		// randomly initialise model variables for training
-		std::cout << "Now randomly initialising model variables for training" << std::endl;
-		if (init_train())
-		{
-			std::cout << "Error: Failed to allocate model variables!" << std::endl;
-			return 1;
-		}
-		// initialise aux variables for testing
-		if (init_test())
-		{
-			std::cout << "Error: Failed to initialise testing variables!" << std::endl;
-			return 1;
-		}
-	}
-
-	// write word map to file
-	if (dataset::write_wordmap(mdir + "wordmap.txt", &word2id))
-	{
-		return 1;
-	}
-
-	// construct the reverse map (currently stupidly by reading back)
-	for (auto w : word2id)
-	{
-		id2word[w.second] = w.first;
-	}
-
-	return 0;
+    // randomly initialise model variables for training
+    std::cout << "Now randomly initialising model variables for training" << std::endl;
+    init_train();
+    
+    if (testing_type == SEPARATE_TEST)
+    {
+        // read held-out testing data
+        testdata = new dataset;
+        fin.open(ddir + tfile, std::ios::binary);
+        testdata->read(fin);
+        fin.close();
+        test_M = testdata->M;
+        
+        // initialise aux variables for testing
+        init_test();
+    }
+    
+    // construct the reverse map (currently stupidly by reading back)
+    for (auto w : word2id)
+            id2word[w.second] = w.first;
+    
+    //display all configurations
+    std::cout << "We will perform ";
+    switch (testing_type)
+    {
+    case NO_TEST:
+            std::cout << "no testing." << std::endl;
+            break;
+    case SELF_TEST:
+            std::cout << "report training set likelihood." << std::endl;
+            break;
+    case SEPARATE_TEST:
+            std::cout << "a test on a heldout set." << std::endl;
+            break;
+    default:
+            break;
+    }
+    std::cout << "data dir = " << ddir << std::endl;
+    std::cout << "Training file = " << dfile << std::endl;
+    if (testing_type == SEPARATE_TEST)
+            std::cout << "Testing file = " << tfile << std::endl;
+    std::cout << "model dir = " << mdir << std::endl;
+    std::cout << "n_iters = " << n_iters << std::endl;
+    std::cout << "alpha = " << alpha << std::endl;
+    std::cout << "beta = " << beta << std::endl;
+    std::cout << "K = " << K << std::endl;
+    std::cout << "V = " << V << std::endl;
+	
+    return 0;
 }
 
 int model::parse_args(std::vector<std::string> arguments)
 {
-	double _alpha = -1.0;
-
-	for (auto arg = arguments.begin(); arg != arguments.end(); ++arg)
+    for (auto arg = arguments.begin(); arg != arguments.end(); ++arg)
+    {
+        if (*arg == "--testing-mode")
+        {
+            ++arg;
+            if (*arg == "nt")
+                testing_type = NO_TEST;
+            else if (*arg == "set")
+                testing_type = SELF_TEST;
+            else if (*arg == "net")
+                testing_type = SEPARATE_TEST;
+        }
+        else if (*arg == "--output-model")
 	{
-		if (*arg == "--testing-mode")
-		{
-			++arg;
-			if (*arg == "nt")
-			{
-				testing_type = NO_TEST;
-			}
-			else if (*arg == "set")
-			{
-				testing_type = SELF_TEST;
-			}
-			else if (*arg == "net")
-			{
-				testing_type = SEPARATE_TEST;
-			}
-		}
-		else if (*arg == "--output-model")
-		{
-			mdir = *(++arg);
-			if (mdir == "")		mdir = "./";
-		}
-		else if (*arg == "--training-file")
-		{
-			dfile = *(++arg);
-			if (dfile == "")
-			{
-				std::cout << "Error: Invalid file path to training corpus." << std::endl;
-				return 1;
-			}
-			std::string::size_type idx = dfile.find_last_of("/");
-			if (idx == std::string::npos)
-			{
-				ddir = "./";
-			}
-			else
-			{
-				ddir = dfile.substr(0, idx + 1);
-				dfile = dfile.substr(idx + 1, dfile.size() - ddir.size());
-				
-			}
-		}
-		else if (*arg == "--testing-file")
-		{
-			tfile = *(++arg);
-		}
-		else if (*arg == "--alpha")
-		{
-			_alpha = std::stod(*(++arg));
-		}
-		else if (*arg == "--beta")
-		{
-			double _beta = std::stod(*(++arg));
-			if (_beta >= 0.0)	beta = _beta;
-		}
-		else if (*arg == "--num-topics")
-		{
-			int _K = std::stoi(*(++arg));
-			if (_K > 0)	K = _K;
-		}
-		else if (*arg == "--num-iterations")
-		{
-			int _n_iters = std::stoi(*(++arg));
-			if (_n_iters > 0)	n_iters = _n_iters;
-		}
-		else if (*arg == "--output-state-interval")
-		{
-			int _n_save = std::stoi(*(++arg));
-			if (_n_save > 0)	n_save = _n_save;
-		}
-		else if (*arg == "--num-top-words")
-		{
-			int _n_topWords = std::stoi(*(++arg));
-			if (_n_topWords > 0) n_topWords = _n_topWords;
-		}
+            mdir = *(++arg);
+            if (mdir == "")
+                mdir = "./";
 	}
+        else if (*arg == "--training-file")
+        {
+            name = *(++arg);
+            if (name == "")
+		throw std::runtime_error( "Error: Invalid file path to training corpus." );
+            std::string::size_type idx = name.find_last_of("/");
+            if (idx == std::string::npos)
+		ddir = "./";
+            else
+            {
+		ddir = name.substr(0, idx + 1);
+		name = name.substr(idx + 1, dfile.size() - ddir.size());
+                vfile = name + ".vocab";
+		tfile = name + "-test.dat";
+		dfile = name + "-0" + ".dat";
+            }    
+        }
+        else if (*arg == "--alpha")
+        {
+            double _alpha = std::stod(*(++arg));
+            if (_alpha >= 0.0)
+                alpha = _alpha;
+        }
+        else if (*arg == "--beta")
+        {
+            double _beta = std::stod(*(++arg));
+            if (_beta >= 0.0)
+                beta = _beta;
+        }
+        else if (*arg == "--num-topics")
+        {
+            int _K = std::stoi(*(++arg));
+            if (_K > 0)
+                K = _K;
+        }
+        else if (*arg == "--num-iterations")
+        {
+            int _n_iters = std::stoi(*(++arg));
+            if (_n_iters > 0)
+                n_iters = _n_iters;
+        }
+        else if (*arg == "--output-state-interval")
+        {
+            int _n_save = std::stoi(*(++arg));
+            if (_n_save > 0)
+                n_save = _n_save;
+        }
+        else if (*arg == "--num-top-words")
+        {
+            int _n_topWords = std::stoi(*(++arg));
+            if (_n_topWords > 0) 
+                n_topWords = _n_topWords;
+        }
+    }
 
 
-	//Check common parameters and accept only if valid
-	if (_alpha >= 0.0)
-	{
-		alpha = _alpha;
-	}
-	else
-	{
-		// default value for alpha
-		alpha = 50.0 / K;
-	}
+    //Check specific parameter    
+    if (testing_type == SEPARATE_TEST)
+    {
+        if (tfile == "")
+            throw std::runtime_error( "Error: Invalid file path to test corpus." );
+    }
 
-	//Check specific parameter    
-	if (testing_type == SEPARATE_TEST)
-	{
-		if (tfile == "")
-		{
-			std::cout << "Error: Invalid file path to test corpus." << std::endl;
-			return 1;
-		}
-	}
+    if (testing_type == INVALID)
+        throw std::runtime_error( "Error: Please choose the task you would like to perform (-nt/-net)!" );
 
-	if (testing_type == INVALID)
-	{
-		std::cout << "Error: Please choose the task you would like to perform (-nt/-set/-net)!" << std::endl;
-		return 1;
-	}
-
-	//display all configurations
-	std::cout << "We will perform ";
-	switch (testing_type)
-	{
-	case NO_TEST:
-		std::cout << "no testing." << std::endl;
-		break;
-	case SELF_TEST:
-		std::cout << "a test on training data." << std::endl;
-		break;
-	case SEPARATE_TEST:
-		std::cout << "a test on a heldout set." << std::endl;
-		break;
-	default:
-		break;
-	}
-	std::cout << "data dir = " << ddir << std::endl;
-	std::cout << "Training file = " << dfile << std::endl;
-	if (testing_type == SEPARATE_TEST)
-		std::cout << "Testing file = " << tfile << std::endl;
-	std::cout << "model dir = " << mdir << std::endl;
-	std::cout << "n_iters = " << n_iters << std::endl;
-	std::cout << "alpha = " << alpha << std::endl;
-	std::cout << "beta = " << beta << std::endl;
-	std::cout << "K = " << K << std::endl;
-
-	return 0;
+    return 0;
 }
 
 int model::init_train()
 {
-	Vbeta = V * beta;
+    alphaK = alpha/K;
+    Vbeta = V * beta;
 
-	// allocate heap memory for model variables
-	n_wk = new int*[V];
-	for (int w = 0; w < V; w++)
-	{
-		n_wk[w] = new int[K];
-		for (int k = 0; k < K; k++)
-		{
-			n_wk[w][k] = 0;
-		}
-	}
+    // allocate heap memory for model variables
+    n_wk = new unsigned*[V];
+    for (unsigned w = 0; w < V; w++)
+    {
+        n_wk[w] = new unsigned[K];
+        for (unsigned short k = 0; k < K; k++)
+        {
+            n_wk[w][k] = 0;
+        }
+    }
 
-	n_mks.resize(M);
+    n_mks.resize(M);
 
-	n_k = new int[K];
-	for (int k = 0; k < K; k++)
-	{
-		n_k[k] = 0;
-	}
+    n_k = new unsigned[K];
+    for (unsigned short k = 0; k < K; k++)
+    {
+            n_k[k] = 0;
+    }
 
-	// random consistent assignment for model variables
-	z = new int*[M];
-	for (int m = 0; m < trngdata->M; m++)
-	{
-		int N = trngdata->docs[m]->length;
-		std::map<int, int > map_nd_m;
-		z[m] = new int[N];
+    // random consistent assignment for model variables
+    z = new unsigned short*[M];
+    for (int m = 0; m < trngdata->M; m++)
+    {
+        unsigned N = trngdata->docs[m]->length;
+        std::map<unsigned short, unsigned> map_nd_m;
+        z[m] = new unsigned short[N];
 
-		// initialize for z
-		for (int n = 0; n < N; n++)
-		{
-			int topic = utils::pick_a_number(0, K - 1);
-			z[m][n] = topic;
-			int w = trngdata->docs[m]->words[n];
+        // initialize for z
+        for (unsigned n = 0; n < N; n++)
+        {
+            unsigned w = trngdata->docs[m]->words[n];
+            unsigned short topic = rng_.rand_k(K);
+            z[m][n] = topic;
+			
+            // number of instances of word i assigned to topic j
+            n_wk[w][topic] += 1;
+            // number of words in document i assigned to topic j
+            map_nd_m[topic] += 1;
+            // total number of words assigned to topic j
+            n_k[topic] += 1;
+        }
+        // transfer to sparse representation
+        for (auto myc : map_nd_m)
+                n_mks[m].push_back(myc);
+    }
 
-			// number of instances of word i assigned to topic j
-			n_wk[w][topic] += 1;
-			// number of words in document i assigned to topic j
-			map_nd_m[topic] += 1;
-			// total number of words assigned to topic j
-			n_k[topic] += 1;
-		}
-		// transfer to sparse representation
-		for (auto myc : map_nd_m)
-			n_mks[m].push_back(myc);
-	}
+    time_ellapsed.reserve(n_iters);
+    likelihood.reserve(n_iters);
 
-	time_ellapsed.reserve(n_iters);
-	likelihood.reserve(n_iters);
+    // allocate heap memory for temporary variables
+    p = new double[K];
+    nd_m = new unsigned[K];
+    rev_mapper = new unsigned short[K];
+    for (unsigned short k = 0; k < K; ++k)
+    {
+        nd_m[k] = 0;
+        rev_mapper[k] = K;
+    }
+        
+    specific_init();
 
-	// allocate heap memory for temporary variables
-	p = new double[K];
-	nd_m = new int[K];
-	rev_mapper = new int[K];
-	for (int k = 0; k < K; ++k)
-	{
-		nd_m[k] = 0;
-		rev_mapper[k] = -1;
-	}
-
-	return 0;
+    return 0;
 }
 
 int model::init_test()
 {
-	// initialise variables for testing
-	test_n_wk = new int*[V];
-	for (int w = 0; w < V; w++)
-	{
-		test_n_wk[w] = new int[K];
-		for (int k = 0; k < K; k++)
-		{
-			test_n_wk[w][k] = 0;
-		}
-	}
+    // initialise variables for testing
+    test_n_mk = new unsigned short*[test_M];
+    for (unsigned m = 0; m < test_M; m++)
+    {
+        test_n_mk[m] = new unsigned[K];
+        for (int k = 0; k < K; k++)
+        {
+                test_n_mk[m][k] = 0;
+        }
+    }
 
-	test_n_mk = new int*[test_M];
-	for (int m = 0; m < test_M; m++)
-	{
-		test_n_mk[m] = new int[K];
-		for (int k = 0; k < K; k++)
-		{
-			test_n_mk[m][k] = 0;
-		}
-	}
+    test_z = new unsigned short*[test_M];
+    for (unsigned m = 0; m < testdata->M; m++)
+    {
+	int N = testdata->docs[m]->length;
+	test_z[m] = new unsigned short[N];
 
-	test_n_k = new int[K];
-	for (int k = 0; k < K; k++)
-	{
-		test_n_k[k] = 0;
-	}
+        // assign values for n_wk, n_mk, n_k
+        for (int n = 0; n < N; n++)
+        {
+            int w = testdata->docs[m]->words[n];
+            int topic = rng_.rand_k(K);
+            test_z[m][n] = topic;
+            // number of words in document i assigned to topic j
+            test_n_mk[m][topic] += 1;
+        }
+    }
 
-	test_z = new int*[test_M];
-	for (int m = 0; m < testdata->M; m++)
-	{
-		int N = testdata->docs[m]->length;
-		test_z[m] = new int[N];
-
-		// assign values for n_wk, n_mk, n_k
-		for (int n = 0; n < N; n++)
-		{
-			int w = testdata->docs[m]->words[n];
-			int topic = utils::pick_a_number(0, K - 1);
-			test_z[m][n] = topic;
-
-			// number of instances of word i assigned to topic j
-			test_n_wk[w][topic] += 1;
-			// number of words in document i assigned to topic j
-			test_n_mk[m][topic] += 1;
-			// total number of words assigned to topic j
-			test_n_k[topic] += 1;
-		}
-	}
-
-	return 0;
-}
-
-int model::vanilla_sampling(int m)
-{
-	for (int n = 0; n < testdata->docs[m]->length; n++)
-	{
-		int w = testdata->docs[m]->words[n];
-
-		// remove z_i from the count variables
-		int topic = test_z[m][n];
-		test_n_wk[w][topic] -= 1;
-		test_n_mk[m][topic] -= 1;
-		test_n_k[topic] -= 1;
-
-		double psum = 0;
-		// do multinomial sampling via cumulative method
-		for (int k = 0; k < K; k++)
-		{
-			psum += (test_n_mk[m][k] + alpha) * (n_wk[w][k] + test_n_wk[w][k] + beta) / (n_k[k] + test_n_k[k] + Vbeta);
-			p[k] = psum;
-		}
-
-		// scaled sample because of unnormalized p[]
-		double u = utils::unif01() * psum;
-		topic = std::lower_bound(p, p+K, u) - p;
-
-		// add newly estimated z_i to count variables
-		test_n_wk[w][topic] += 1;
-		test_n_mk[m][topic] += 1;
-		test_n_k[topic] += 1;
-		test_z[m][n] = topic;
-	}
-
-	return 0;
+    return 0;
 }
 
 double model::newllhw() const
 {
-	double sum = 0;
-	int num_tokens = 0;
-	for (int m = 0; m < test_M; ++m)
-	{
-		double dsum = 0;
-		num_tokens += testdata->docs[m]->length;
-		for (int n = 0; n < testdata->docs[m]->length; n++)
-		{
-			double wsum = 0;
-			int w = testdata->docs[m]->words[n];
-			for (int k = 0; k<K; k++)
-			{
-				wsum += (test_n_mk[m][k] + alpha) * (n_wk[w][k] + test_n_wk[w][k] + beta) / (n_k[k] + test_n_k[k] + Vbeta);
-			}
-			dsum += log(wsum);
-		}
-		sum += dsum - testdata->docs[m]->length*log(testdata->docs[m]->length + K * alpha);
-	}
-	return sum / num_tokens;
+    double sum = 0;
+    unsigned num_tokens = 0;
+    for (unsigned m = 0; m < test_M; ++m)
+    {
+        double dsum = 0;
+        num_tokens += testdata->docs[m]->length;
+        for (unsigned n = 0; n < testdata->docs[m]->length; n++)
+        {
+            double wsum = 0;
+            unsigned w = testdata->docs[m]->words[n];
+            for (unsigned short k = 0; k<K; k++)
+                wsum += (test_n_mk[m][k] + alphaK) * (n_wk[w][k] + beta) / (n_k[k] + Vbeta);
+            dsum += log(wsum);
+        }
+	sum += dsum - testdata->docs[m]->length*log(testdata->docs[m]->length + alpha);
+    }
+    return ( sum / num_tokens );
 }
 
 double model::llhw() const
 {
-	double sum = 0;
-	int num_tokens = 0;
-	for (int m = 0; m < M; m++)
-	{
-		for (auto k = n_mks[m].begin(); k != n_mks[m].end(); ++k)
-		{
-			nd_m[k->first] = k->second;
-		}
+    double sum = 0;
+    unsigned num_tokens = 0;
+    std::vector<unsigned> nd_m(K);
+    std::fill(nd_m.begin(), nd_m.end(),0);
+    for (unsigned m = 0; m < M; m++)
+    {
+        for (const auto& k : n_mks[m])
+            nd_m[k.idx] = k.val;
 
-		double dsum = 0;
-		num_tokens += trngdata->docs[m]->length;
-		for (int n = 0; n < trngdata->docs[m]->length; n++)
-		{
-			double wsum = 0;
-			int w = trngdata->docs[m]->words[n];
-			for (int k = 0; k<K; k++)
-			{
-				wsum += (nd_m[k] + alpha) * (n_wk[w][k] + beta) / (n_k[k] + Vbeta);
-			}
-			wsum /= (trngdata->docs[m]->length + K * alpha);
-			dsum += log(wsum);
-		}
-		sum += dsum;
-		for (auto k = n_mks[m].begin(); k != n_mks[m].end(); ++k)
-		{
-			nd_m[k->first] = 0;
-		}
+        double dsum = 0;
+        num_tokens += trngdata->docs[m]->length;
+        for (unsigned n = 0; n < trngdata->docs[m]->length; n++)
+        {
+            double wsum = 0;
+            unsigned w = trngdata->docs[m]->words[n];
+            for (int k = 0; k<K; k++)
+                wsum += (nd_m[k] + alphaK) * (n_wk[w][k] + beta) / (n_k[k] + Vbeta);
+            dsum += log(wsum);
 	}
-	return sum / num_tokens;
+	sum += dsum - trngdata->docs[m]->length * log(trngdata->docs[m]->length + alpha);
+        for (const auto& k : n_mks[m])
+            nd_m[k.idx] = 0;
+    }
+    return ( sum / num_tokens );
 }
 
 int model::save_model(int iter) const
 {
-	std::string model_name = dfile + "-";
-	if (iter >= 0)
-	{
-		std::ostringstream sstr1;
-		sstr1 << std::setw(5) << std::setfill('0') << iter;
-		model_name += sstr1.str();
-	}
-	else
-	{
-		model_name += "final";
-	}
-	
-	if (save_model_time(mdir + model_name + ".time"))
-	{
-		return 1;
-	}
-	std::cout << "time done" << std::endl;
-	if (save_model_llh(mdir + model_name + ".llh"))
-	{
-		return 1;
-	}
-	std::cout << "llh done" << std::endl;
-	if (save_model_params(mdir + model_name + ".params")) 
-	{
-		return 1;
+    std::string model_name = name + "-" + std::to_string(iter);
+
+    if (iter >= 0)
+    {
+        std::ostringstream sstr1;
+	sstr1 << std::setw(5) << std::setfill('0') << iter;
+	model_name += sstr1.str();
     }
-	std::cout << "others done" << std::endl;
+    else
+    	model_name += "final";
+
+    save_model_params(mdir + model_name + ".params");
+    save_model_phi(mdir + model_name + ".phi");
+    save_model_time(mdir + model_name + ".time");
+    if (testing_type == SEPARATE_TEST || testing_type == SELF_TEST) 
+        save_model_llh(mdir + model_name + ".llh");    
     if (n_topWords > 0)
-	{
-		//if (save_model_twords(mdir + model_name + ".twords")) 
-		//ff{
-		//	return 1;
-		//}
-		//std::cout << "twords done" << std::endl;
-    }
-	//if (model_status == MODEL_SELF_TEST)
-	//{
-	//	if (save_model_phi(mdir + model_name + ".phi"))
-	//	{
-	//		return 1;
-	//	}
-	//	std::cout << "phi done" << std::endl;
-	//}
+        save_model_topWords(mdir + model_name + ".twords");
+	
     return 0;
 }
 
 int model::save_model_time(std::string filename) const
 {
-	std::ofstream fout(filename);
-	if (!fout)
-	{
-		std::cout << "Error: Cannot open file to save: " << filename << std::endl;
-		return 1;
-	}
+    std::ofstream fout(filename);
+    if (!fout)
+        throw std::runtime_error( "Error: Cannot open file to save: " + filename);
+		
+    for (unsigned r = 0; r < time_ellapsed.size(); ++r)
+        fout << time_ellapsed[r] << std::endl;
 
-	for (unsigned r = 0; r < time_ellapsed.size(); ++r)
-	{
-		fout << time_ellapsed[r] << std::endl;
-	}
+    fout.close();
+    std::cout << "time done" << std::endl;
 
-	fout.close();
-
-	return 0;
+    return 0;
 }
 
 int model::save_model_llh(std::string filename) const
 {
-	std::ofstream fout(filename);
-	if (!fout)
-	{
-		std::cout << "Error: Cannot open file to save: " << filename << std::endl;
-		return 1;
-	}
+    std::ofstream fout(filename);
+    if (!fout)
+        throw std::runtime_error( "Error: Cannot open file to save: " + filename );
+    
+    for (unsigned r = 0; r < likelihood.size(); ++r)
+        fout << likelihood[r] << std::endl;
+	
+    fout.close();
+    std::cout << "llh done" << std::endl;
 
-	for (unsigned r = 0; r < likelihood.size(); ++r)
-	{
-		fout << likelihood[r] << std::endl;
-	}
-
-	fout.close();
-
-	return 0;
+    return 0;
 }
 
 int model::save_model_params(std::string filename) const
 {
-	std::ofstream fout(filename);
-	if (!fout)
-	{
-		std::cout << "Error: Cannot open file to save: " << filename << std::endl;
-		return 1;
-	}
+    std::ofstream fout(filename);
+    if (!fout)
+        throw std::runtime_error( "Error: Cannot open file to save: " + filename );
 
-	fout << "alpha=" << alpha << std::endl;
-	fout << "beta=" << beta << std::endl;
-	fout << "num-topics=" << K << std::endl;
-	fout << "num-docs=" << M << std::endl;
-	fout << "num-words=" << V << std::endl;
-	fout << "num-iters=" << n_iters << std::endl;
-	fout.close();
+    fout << "alpha=" << alpha << std::endl;
+    fout << "beta=" << beta << std::endl;
+    fout << "num-topics=" << K << std::endl;
+    fout << "num-docs=" << M << std::endl;
+    fout << "num-words=" << V << std::endl;
+    fout << "num-iters=" << n_iters << std::endl;
+    
+    fout.close();
+    std::cout << "others done" << std::endl;
     
     return 0;
 }
 
 int model::save_model_topWords(std::string filename) const
 {
-	std::ofstream fout(filename);
-	if (!fout)
-	{
-		std::cout << "Error: Cannot open file to save: " << filename << std::endl;
-		return 1;
-	}
-   
-	int _n_topWords = n_topWords;
+    std::ofstream fout(filename);
+    if (!fout)
+        throw std::runtime_error( "Error: Cannot open file to save: " + filename );
+
+    unsigned _n_topWords = n_topWords;
     if (_n_topWords > V)	_n_topWords = V;
- 
-	std::map<int, std::string>::const_iterator it;
-    
-    for (int k = 0; k < K; k++)
+
+    std::map<unsigned, std::string>::const_iterator it;
+
+    for (unsigned short k = 0; k < K; k++)
+    {
+        std::vector<std::pair<unsigned, unsigned> > words_probs(V);
+        std::pair<unsigned, unsigned> word_prob;
+        for (int w = 0; w < V; w++)
+        {
+            word_prob.first = w;
+            word_prob.second = n_wk[w][k];
+            words_probs[w] = word_prob;
+	}
+
+	// quick sort to sort word-topic probability
+	std::sort(words_probs.begin(), words_probs.end(), [](auto &left, auto &right){return left.second > right.second;});
+
+	fout << "Topic " << k << "th:" << std::endl;
+	for (unsigned i = 0; i < _n_topWords; i++)
 	{
-		std::vector<std::pair<int, int> > words_probs(V);
-		std::pair<int, int> word_prob;
-		for (int w = 0; w < V; w++)
-		{
-			word_prob.first = w;
-			word_prob.second = n_wk[w][k];
-			words_probs[w] = word_prob;
-		}
-    
-        // quick sort to sort word-topic probability
-		std::sort(words_probs.begin(), words_probs.end());
-	
-		fout << "Topic " << k << "th:" << std::endl;
-		for (int i = 0; i < _n_topWords; i++)
-		{
-			it = id2word.find(words_probs[i].first);
-			if (it != id2word.end()) 
-			{
-				fout << "\t" << it->second << "   " << words_probs[i].second << std::endl;
-			}
-		}
+            it = id2word.find(words_probs[i].first);
+            if (it != id2word.end())
+		fout << "\t" << it->second << "   " << words_probs[i].second << std::endl;
+	}
     }
-    
-    fout.close();    
-    
-    return 0;    
+
+    fout.close();
+    std::cout << "twords done" << std::endl;
+
+    return 0;
 }
 
 int model::save_model_phi(std::string filename) const
 {
-	std::ofstream fout(filename);
-	if (!fout)
-	{
-		std::cout << "Error: Cannot open file to save: " << filename << std::endl;
-		return 1;
-	}
+    std::ofstream fout(filename, std::ios::binary);
+    if (!fout)
+        throw std::runtime_error( "Error: Cannot open file to save: " + filename );
 
-	for (int k = 0; k < K; k++)
-	{
-		for (int w = 0; w < V; w++)
-		{
-			fout << (n_wk[w][k] + beta) / (n_k[k] + Vbeta) << " ";
-		}
-		fout << std::endl;
-	}
+    fout.write((char *)&V, sizeof(unsigned));
+    fout.write((char *)&K, sizeof(unsigned short));
 
-	fout.close();
+    float *phi_w = new float[K];
+    for (unsigned w = 0; w < V; ++w)
+    {
+	for (unsigned short k = 0; k < K; ++k)
+            phi_w[k] = (n_wk[w][k] + beta) / (n_k[k] + Vbeta);
+        fout.write((char *)(phi_w), sizeof(float)*K);
+    }
+    delete[] phi_w;
 
-	return 0;
-}
-
-int model::sanity() const
-{
-	long tott = 0;
-        for(int m = 0; m < M; ++m)
-	{
-		int sumd = 0;
-                for(const auto &t:n_mks[m])
-			sumd += t.second;
-		if (sumd == trngdata->docs[m]->length)
-			tott += sumd;
-		else
-			std::cout<<"Length mismatch at doc: "<<m<<std::endl;
-        }
-	std::cout<<"Total number of training tokens: "<<tott <<std::endl;
-	return 0;
-}
-
-int model::dump()
-{
-	std::ifstream fin("phi.txt");
-
-	if (!fin.is_open()) {
-		std::cout << "Cannot open file to read! " << std::endl;
-		return 0;
-	}
-
-	std::string line;
-	int countv = 0;
-
-	while (!fin.eof())
-	{
-		std::string word_text;
-		long wordID, topic, count;
-		getline(fin, line);
-		std::stringstream ss(line);
-		ss >> wordID;
-		ss >> word_text;
-		//ss >> wordID;
-		while (ss >> topic)
-		{
-			ss >> count;
-			//std::cout << wordID << count << std::endl;
-			wordID = word2id[word_text];
-			n_wk[wordID][topic] = count;
-		}
-		countv++;
-	}
-
-	std::cout << "Done with reading document data with words:" << countv << std::endl;
-	fin.close();
-
-	return 0;
-}
-
-int model::dump2()
-{
-	std::ifstream fin("new-state.txt");
-
-	if (!fin.is_open()) {
-		std::cout << "Cannot open file to read! " << std::endl;
-		return 0;
-	}
-
-	for (int v = 0; v < V; ++v)
-	{
-		for (int k = 0; k < K; ++k)
-			n_wk[v][k] = 0;
-	}
-	for (int k = 0; k < K; ++k)
-		n_k[k] = 0;
-
-	std::string line;
-	while (!fin.eof())
-	{
-		std::string word_text;
-		long docID, pos, wordID, topic;
-		getline(fin, line);
-		std::stringstream ss(line);
-		ss >> docID;
-		ss >> word_text;
-		ss >> pos;
-		ss >> topic;
-		ss >> word_text;
-		ss >> topic;
-		wordID = word2id[word_text];
-		//std::cout << docID << " " << pos << " " << word_text << " " << topic << std::endl;
-		z[docID][pos] = topic;
-		n_wk[wordID][topic]++;
-		n_k[topic]++;
-	}
-
-	int countv = 0;
-	for (int k = 0; k < K; ++k)
-		countv += n_k[k];
-
-
-	std::cout << "Done with reading document data with words:" << countv << std::endl;
-	fin.close();
-
-	return 0;
+    fout.close();
+    std::cout << "phi done" << std::endl;
+    
+    return 0;
 }
