@@ -30,31 +30,35 @@ void show_help()
 
 int main(int argc, char ** argv) 
 {
-	model *lda=NULL;
+    model *lda = NULL;
 
-	// initialize the model
-    if (!(lda = model::init(argc, argv)))
-	{
-		show_help();
-		system("pause");
-		return 1;
+    // initialize the model
+    try {
+        lda = model::init(argc, argv);
+    } catch(std::exception& e) {
+        show_help();
+        throw;
     }
-    
+
     // Train the model
-	if(lda->train())
-	{
-		std::cout << "Error: There exists a Bug in training part!" << std::endl;
-		return 1;
-	}
-    
-	// Finally test the model	
-	if(lda->test())
-	{
-		std::cout << "Error: There exists a Bug in testing part!" << std::endl;
-		return 1;
+    try {
+        lda->train();
+    } catch(std::exception& e) {
+        std::cout << "Error: There exists a Bug in training part!" << std::endl;
+        throw;
     }
 
-	system("pause");
+    // Finally test the model	
+    try {
+        lda->test();
+    } catch (std::exception& e) {
+        std::cout << "Error: There exists a Bug in testing part!" << std::endl;
+        throw;
+    }
+
+    delete lda;	
+
+    system("pause");
     return 0;
 }
 
