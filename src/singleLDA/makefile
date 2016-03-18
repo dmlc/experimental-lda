@@ -8,8 +8,8 @@ INTEL_LFLAGS = -I"$(CDIR)" -O2 -DNDEBUG -march=core-avx2 -std=c++11 -inline-fact
 
 
 GNU_CC = g++
-GNU_CFLAGS = -I"$(CDIR)" -O3 -march=core-avx2 -pthread -std=c++11 -c
-GNU_LFLAGS = -I"$(CDIR)" -O3 -march=core-avx2 -pthread -std=c++11
+GNU_CFLAGS = -I"$(CDIR)" -O3 -march=core-avx2 -pthread -std=c++14 -c
+GNU_LFLAGS = -I"$(CDIR)" -O3 -march=core-avx2 -pthread -std=c++14
 
 CC = $(GNU_CC)
 CFLAGS = $(GNU_CFLAGS)
@@ -36,14 +36,14 @@ intel: $(EXECUTABLE)
 
 
 $(EXECUTABLE): $(COBJECT)  $(OBJECTS)
-        $(CC) $(LFLAGS) $^ -o $@
+	$(CC) $(LFLAGS) $^ -o $@
 
 $(OBJECTS): $(BUILDDIR)/%.o : $(SOURCEDIR)/%.cpp
-        $(CC) $(CFLAGS) $< -o $@
+	$(CC) $(CFLAGS) $< -o $@
 
 $(COBJECT): $(BUILDDIR)/%.o : $(SOURCEDIR)/../commons/%.cpp
-        $(CC) $(CFLAGS) $< -o $@
+	$(CC) $(CFLAGS) $< -o $@
 
 clean:
-        rm -rf $(BUILDDIR)/*
-        rm -rf $(EXECUTABLE)
+	rm -rf $(BUILDDIR)/*
+	rm -rf $(EXECUTABLE)

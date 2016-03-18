@@ -128,7 +128,7 @@ int sparseLDA::specific_init()
     return 0;
 }
 
-int sparseLDA::sampling(int m)
+int sparseLDA::sampling(unsigned m)
 {
     unsigned short kc = 0;
     rsum = 0;
@@ -437,7 +437,7 @@ int FTreeLDA::sampling(unsigned m)
 
             if (u < psum)
             {
-                unsigned short temp = std::lower_bound(p, p+i, u) - p;
+                unsigned short temp = std::lower_bound(p, p+ii, u) - p;
                 topic = n_mks[m].idx_in(temp);
             }
             else
@@ -515,11 +515,11 @@ int forestLDA::sampling(unsigned m)
 
         if (u < psum)
         {
-            unsigned short temp = std::lower_bound(p, p+i, u) - p;
+            unsigned short temp = std::lower_bound(p, p+ii, u) - p;
             topic = n_mks[m].idx_in(temp);
 
             // add newly estimated z_i to count variables
-            add_to_topic( w, m, topic, old_topic );
+            add_to_topic( w, m, topic );
 
             q[w].forest[0][old_topic].weight = copy_old_val;
             q[w].wsum += copy_old_val - temp_calc;
@@ -569,7 +569,7 @@ int lightLDA::specific_init()
     return 0;
 }
 
-int lightLDA::sampling(int m)
+int lightLDA::sampling(unsigned m)
 {
     int kc = 0;
     for (const auto& k : n_mks[m])

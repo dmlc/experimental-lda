@@ -462,7 +462,7 @@ int model::init_train()
         }
         // transfer to sparse representation
         for (auto myc : map_nd_m)
-                n_mks[m].push_back(myc);
+                n_mks[m].push_back(myc.first, myc.second);
     }
 
     time_ellapsed.reserve(n_iters);
@@ -486,7 +486,7 @@ int model::init_train()
 int model::init_test()
 {
     // initialise variables for testing
-    test_n_mk = new unsigned short*[test_M];
+    test_n_mk = new unsigned*[test_M];
     for (unsigned m = 0; m < test_M; m++)
     {
         test_n_mk[m] = new unsigned[K];
@@ -565,7 +565,7 @@ double model::llhw() const
     return ( sum / num_tokens );
 }
 
-int model::save_model(int iter) const
+int model::save_model(unsigned iter) const
 {
     std::string model_name = name + "-" + std::to_string(iter);
 
