@@ -257,10 +257,10 @@ public:
 	//}
     }
 
-    inline void increment(unsigned short pos)
+    inline unsigned increment(unsigned short pos)
     {
 	//if (0 <= pos && pos < _size) {
-	_data[pos].val++;
+	return ++_data[pos].val;
 	//_val[pos] = csuros::increment(_val[pos], r);
 	//}
 	//else {
@@ -268,10 +268,10 @@ public:
 	//}
     }
 
-    inline void decrement(unsigned short pos)
+    inline unsigned decrement(unsigned short pos)
     {
 	//if (0 <= pos && pos < _size) {
-	_data[pos].val--;
+	return --_data[pos].val;
 	//	}
     }
 

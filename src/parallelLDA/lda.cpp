@@ -126,12 +126,12 @@ int sparseLDA::sampling(unsigned i)
     xorshift128plus rng_;
 	
     double * p = new double[K]; // temp variable for sampling
-    unsigned *nd_m = new unsigned[K];
+    //unsigned *nd_m = new unsigned[K];
     unsigned short *rev_mapper = new unsigned short[K];
     unsigned short *fwd_mapper = new unsigned short[K];
     for (unsigned short k = 0; k < K; ++k)
     {
-        nd_m[k] = 0;
+        //nd_m[k] = 0;
         rev_mapper[k] = K;
         fwd_mapper[k] = K;
     }
@@ -175,7 +175,7 @@ int sparseLDA::sampling(unsigned i)
             rsum = 0;
             for (const auto& k : n_mks[m])
             {
-                    nd_m[k.idx] = k.val;
+                    //nd_m[k.idx] = k.val;
                     rev_mapper[k.idx] = kc++;
                     double temp = k.val / (nwsum_local[k.idx] + Vbeta);
                     rsum += temp;
@@ -189,14 +189,13 @@ int sparseLDA::sampling(unsigned i)
 
                 // remove z_ij from the count variables
                 unsigned short topic = z[m][n]; unsigned short old_topic = topic;
-                nd_m[topic] -= 1;
-                n_mks[m].decrement(rev_mapper[topic]);
-		//nwsum_local[topic] -= 1;
+                //nd_m[topic] -= 1;
+                
 
                 // update the bucket sums
                 double denom = nwsum_local[topic] + Vbeta;
                 rsum -= beta / denom;
-                q1[topic] = (alphaK + nd_m[topic]) / denom;
+                q1[topic] = (alphaK + n_mks[m].decrement(rev_mapper[topic])) / denom;
 
                 //  Divide the full sampling mass into three buckets. [s | r | q]
                 qsum = 0;
@@ -244,21 +243,21 @@ int sparseLDA::sampling(unsigned i)
                 //update the bucket sums
                 denom = nwsum_local[topic] + Vbeta;
                 rsum += beta / denom;
-                q1[topic] = (alphaK + nd_m[topic] + 1) / denom;
 
                 // add newly estimated z_i to count variables
                 if (topic!=old_topic)
                 {
-                    if(nd_m[topic] == 0)
+                    if(rev_mapper[topic] == K)
                     {
                             rev_mapper[topic] = n_mks[m].push_back(topic, 1);
+                	    q1[topic] = (alphaK + 1) / denom;
                     }
                     else
                     {
-                            n_mks[m].increment(rev_mapper[topic]);
+                	    q1[topic] = (alphaK + n_mks[m].increment(rev_mapper[topic])) / denom;
                     }
-                    nd_m[topic] += 1;
-                    if (nd_m[old_topic] == 0)
+                    //nd_m[topic] += 1;
+                    if (n_mks[m].val_in(rev_mapper[old_topic]) == 0)
                     {
 			unsigned short pos = n_mks[m].erase_pos(rev_mapper[old_topic]);
                         rev_mapper[pos] = rev_mapper[old_topic];
@@ -269,8 +268,8 @@ int sparseLDA::sampling(unsigned i)
                 }
                 else
                 {
-                    n_mks[m].increment(rev_mapper[topic]);
-                    nd_m[topic] += 1;
+                    q1[topic] = (alphaK +  n_mks[m].increment(rev_mapper[topic])) / denom;
+                    //nd_m[topic] += 1;
                 }
 
                 z[m][n] = topic;
@@ -278,7 +277,7 @@ int sparseLDA::sampling(unsigned i)
             for (const auto& k : n_mks[m])
             {
                 q1[k.idx] -= k.val / (nwsum_local[k.idx] + Vbeta);
-                nd_m[k.idx] = 0;
+                //nd_m[k.idx] = 0;
                 rev_mapper[k.idx] = K;
             }
         }
@@ -288,7 +287,7 @@ int sparseLDA::sampling(unsigned i)
     }
 
     delete[] p;
-    delete[] nd_m;
+    //delete[] nd_m;
     delete[] rev_mapper;
     delete[] fwd_mapper;
 
