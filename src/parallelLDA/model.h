@@ -112,6 +112,7 @@ protected:
     unsigned nst;						// number of sampling threads
     unsigned ntt;						// number of table updating threads
     volatile bool inf_stop;					// flag for stopping inference
+    unsigned *current_iter;					// current iteration of some thread
     std::mutex t_mtx;				// lock for n_k
     std::mutex* mtx;				// lock for data-structures involving n_wk
     struct delta					// sufficient statistic update message

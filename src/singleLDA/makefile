@@ -3,8 +3,8 @@ CDIR = ../commons
 DEBUG = -DNDEBUG
 
 INTEL_CC = icc
-INTEL_CFLAGS = -I"$(CDIR)" -O2 -DNDEBUG -march=core-avx2 -std=c++11 -inline-factor=500 -no-inline-max-size -no-inline-max-total-size -use-intel-optimized-headers -parallel -opt-prefetch=4 -opt-mem-layout-trans=2 -c
-INTEL_LFLAGS = -I"$(CDIR)" -O2 -DNDEBUG -march=core-avx2 -std=c++11 -inline-factor=500 -no-inline-max-size -no-inline-max-total-size -use-intel-optimized-headers -parallel -opt-prefetch=4 -opt-mem-layout-trans=2
+INTEL_CFLAGS = -I"$(CDIR)" -O2 -DNDEBUG -march=core-avx2 -std=c++14 -inline-factor=500 -no-inline-max-size -no-inline-max-total-size -use-intel-optimized-headers -parallel -opt-prefetch=4 -opt-mem-layout-trans=2 -c
+INTEL_LFLAGS = -I"$(CDIR)" -O2 -DNDEBUG -march=core-avx2 -std=c++14 -inline-factor=500 -no-inline-max-size -no-inline-max-total-size -use-intel-optimized-headers -parallel -opt-prefetch=4 -opt-mem-layout-trans=2
 
 
 GNU_CC = g++

@@ -1,11 +1,11 @@
 #!/bin/bash
 
-DATASETS="nytimes" 
-METHODS="lightLDA"
+DATASETS="pubmed" 
+METHODS="FTreeLDA"
 NUM_ITER="1000"
 NUM_TOPICS="1000"
-NST="16"
-NTT="4"
+NST="50"
+NTT="15"
 
 for DATASET in $DATASETS
 do

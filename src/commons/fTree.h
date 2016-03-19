@@ -43,7 +43,7 @@ public:
 	
     inline void update(unsigned short t, double new_w)
     {
-        short i = t + T;
+        unsigned short i = t + T;
         double delta = new_w - w[i];
         while (i > 0)
         {
@@ -52,7 +52,7 @@ public:
         }
     }
 
-    inline float getComponent(unsigned short t)
+    inline double getComponent(unsigned short t)
     {
         return w[t + T];
     }
@@ -60,7 +60,7 @@ public:
     inline void constructTree(double* weights)
     {
         // Reversely initialize elements
-        unsigned i = 2 * T - 1;
+        unsigned short i = 2 * T - 1;
 	while (i >= T)
 	{
 		w[i] = weights[i - T];
@@ -74,7 +74,7 @@ public:
 	}
     }
 	
-    inline short sample(double u)
+    inline unsigned short sample(double u)
     {
         unsigned short i = 1;
         u = u * w[i];

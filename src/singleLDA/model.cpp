@@ -661,7 +661,7 @@ int model::save_model_topWords(std::string filename) const
 	}
 
 	// quick sort to sort word-topic probability
-	std::sort(words_probs.begin(), words_probs.end(), [](auto &left, auto &right){return left.second > right.second;});
+	std::sort(words_probs.begin(), words_probs.end(), [](std::pair<unsigned, unsigned> &left, std::pair<unsigned, unsigned> &right){return left.second > right.second;});
 
 	fout << "Topic " << k << "th:" << std::endl;
 	for (unsigned i = 0; i < _n_topWords; i++)

@@ -18,11 +18,12 @@ int simpleLDA::sampling(unsigned i)
     for (unsigned short k = 0; k < K; ++k)
     {
         nd_m[k] = 0;
-        rev_mapper[k] = -1;
+        rev_mapper[k] = K;
     }
     std::chrono::high_resolution_clock::time_point ts, tn;
-	
-    for (unsigned iter = 0; iter < n_iters; ++iter)
+
+    unsigned iter; current_iter = &iter;	
+    for (iter = 0; iter < n_iters; ++iter)
     {
         ts = std::chrono::high_resolution_clock::now();
         // for each document of worker i
@@ -70,7 +71,7 @@ int simpleLDA::sampling(unsigned i)
                     {
 			unsigned short pos = n_mks[m].erase_pos(rev_mapper[old_topic]);
                         rev_mapper[pos] = rev_mapper[old_topic];
-                        rev_mapper[old_topic] = -1;                        
+                        rev_mapper[old_topic] = K;                        
                     }
 
                     cbuff[nst*(w%ntt)+i].push(delta(w,old_topic, topic));
@@ -85,7 +86,7 @@ int simpleLDA::sampling(unsigned i)
             for (const auto& k : n_mks[m])
             {
                     nd_m[k.idx] = 0;
-                    rev_mapper[k.idx] = -1;
+                    rev_mapper[k.idx] = K;
             }
         }
 	tn = std::chrono::high_resolution_clock::now();
@@ -151,7 +152,8 @@ int sparseLDA::sampling(unsigned i)
     ssum *= alpha * beta;
     std::chrono::high_resolution_clock::time_point ts, tn;
 
-    for (unsigned iter = 0; iter < n_iters; ++iter)
+    unsigned iter; current_iter = &iter;	
+    for (iter = 0; iter < n_iters; ++iter)
     {
         ts = std::chrono::high_resolution_clock::now();
         // for each document of worker i
@@ -413,11 +415,12 @@ int aliasLDA::sampling(unsigned i)
     for (unsigned short k = 0; k < K; ++k)
     {
         nd_m[k] = 0;
-        rev_mapper[k] = -1;
+        rev_mapper[k] = K;
     }
     std::chrono::high_resolution_clock::time_point ts, tn;
 
-    for (unsigned iter = 0; iter < n_iters; ++iter)
+    unsigned iter; current_iter = &iter;	
+    for (iter = 0; iter < n_iters; ++iter)
     {
         ts = std::chrono::high_resolution_clock::now();
         // for each document of worker i
@@ -510,7 +513,7 @@ int aliasLDA::sampling(unsigned i)
                     {
 			unsigned short pos = n_mks[m].erase_pos(rev_mapper[old_topic]);
                         rev_mapper[pos] = rev_mapper[old_topic];
-                        rev_mapper[old_topic] = -1;
+                        rev_mapper[old_topic] = K;
                     }
 
                     cbuff[nst*(w%ntt)+i].push(delta(w,old_topic, topic));
@@ -525,7 +528,7 @@ int aliasLDA::sampling(unsigned i)
             for (const auto& k : n_mks[m])
             {
                 nd_m[k.idx] = 0;
-                rev_mapper[k.idx] = -1;
+                rev_mapper[k.idx] = K;
             }
         }
         tn = std::chrono::high_resolution_clock::now();
@@ -574,25 +577,28 @@ int FTreeLDA::sampling(unsigned i)
     xorshift128plus rng_;
     
     double * p = new double[K]; // temp variable for sampling
-    unsigned *nd_m = new unsigned[K];
+    //unsigned *nd_m = new unsigned[K];
     unsigned short *rev_mapper = new unsigned short[K];
-    for (unsigned k = 0; k < K; ++k)
+    for (unsigned short k = 0; k < K; ++k)
     {
-        nd_m[k] = 0;
-        rev_mapper[k] = -1;
+        //nd_m[k] = 0;
+        rev_mapper[k] = K;
     }
     std::chrono::high_resolution_clock::time_point ts, tn;
 
-    for (unsigned iter = 0; iter < n_iters; ++iter)
+    unsigned iter; current_iter = &iter;	
+    for (iter = 0; iter < n_iters; ++iter)
     {
         ts = std::chrono::high_resolution_clock::now();
         // for each document of worker i
         for (unsigned m = i; m < M; m+=nst)
         {
-            unsigned kc = 0;
+	   //auto n_ms = n_mks[m];
+		
+            unsigned short kc = 0;
             for (const auto& k : n_mks[m])
             {
-                nd_m[k.idx] = k.val;
+                //nd_m[k.idx] = k.val;
                 rev_mapper[k.idx] = kc++;
             }
             for (unsigned n = 0; n < trngdata->docs[m]->length; ++n)
@@ -601,7 +607,7 @@ int FTreeLDA::sampling(unsigned i)
 
                 // remove z_ij from the count variables
                 unsigned short topic = z[m][n]; unsigned short old_topic = topic;
-                nd_m[topic] -= 1;
+                //nd_m[topic] -= 1;
                 n_mks[m].decrement(rev_mapper[topic]);
 
                 // Multi core approximation: do not update fTree[w] apriori
@@ -636,7 +642,7 @@ int FTreeLDA::sampling(unsigned i)
                 // add newly estimated z_i to count variables
                 if (topic!=old_topic)
                 {
-                    if(nd_m[topic] == 0)
+                    if(rev_mapper[topic] == K)
                     {
                         rev_mapper[topic] = n_mks[m].push_back(topic, 1);
                     }
@@ -644,12 +650,12 @@ int FTreeLDA::sampling(unsigned i)
                     {
                         n_mks[m].increment(rev_mapper[topic]);
                     }
-                    nd_m[topic] += 1;
-                    if (nd_m[old_topic] == 0)
+                    //nd_m[topic] += 1;
+                    if (n_mks[m].val_in(rev_mapper[old_topic]) == 0)
                     {
                             unsigned short pos = n_mks[m].erase_pos(rev_mapper[old_topic]);
                             rev_mapper[pos] = rev_mapper[old_topic];
-                            rev_mapper[old_topic] = -1;
+                            rev_mapper[old_topic] = K;
                     }
 
                     cbuff[nst*(w%ntt)+i].push(delta(w,old_topic,topic));
@@ -657,14 +663,14 @@ int FTreeLDA::sampling(unsigned i)
                 else
                 {
                     n_mks[m].increment(rev_mapper[topic]);
-                    nd_m[topic] += 1;
+                    //nd_m[topic] += 1;
                 }
                 z[m][n] = topic;
             }
             for (const auto& k : n_mks[m])
             {
-                    nd_m[k.idx] = 0;
-                    rev_mapper[k.idx] = -1;
+                    //nd_m[k.idx] = 0;
+                    rev_mapper[k.idx] = K;
             }
         }
         tn = std::chrono::high_resolution_clock::now();
@@ -672,7 +678,7 @@ int FTreeLDA::sampling(unsigned i)
         //                  << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(tn - ts).count() << std::endl;
     }
     delete[] p;
-    delete[] nd_m;
+    //delete[] nd_m;
     delete[] rev_mapper;
 
     return 0;	
@@ -730,11 +736,12 @@ int lightLDA::sampling(unsigned i)
     for (unsigned short k = 0; k < K; ++k)
     {
         nd_m[k] = 0;
-        rev_mapper[k] = -1;
+        rev_mapper[k] = K;
     }
     std::chrono::high_resolution_clock::time_point ts, tn;
 
-    for (unsigned iter = 0; iter < n_iters; ++iter)
+    unsigned iter; current_iter = &iter;	
+    for (iter = 0; iter < n_iters; ++iter)
     {
         ts = std::chrono::high_resolution_clock::now();
         // for each document of worker i
@@ -841,7 +848,7 @@ int lightLDA::sampling(unsigned i)
                     {
                         unsigned short pos = n_mks[m].erase_pos(rev_mapper[old_topic]);
                         rev_mapper[pos] = rev_mapper[old_topic];
-                        rev_mapper[old_topic] = -1;
+                        rev_mapper[old_topic] = K;
                     }
 
                     cbuff[nst*(w%ntt)+i].push(delta(w,old_topic,topic));
@@ -856,7 +863,7 @@ int lightLDA::sampling(unsigned i)
             for (const auto& k : n_mks[m])
             {
                 nd_m[k.idx] = 0;
-                rev_mapper[k.idx] = -1;
+                rev_mapper[k.idx] = K;
             }
         }
         tn = std::chrono::high_resolution_clock::now();

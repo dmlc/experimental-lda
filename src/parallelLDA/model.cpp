@@ -35,6 +35,7 @@ model::model()
     ntt = 2;
     //done = NULL;
     inf_stop = false;
+    current_iter = NULL;
 
     time_ellapsed.reserve(50);
     likelihood.reserve(50);
@@ -543,7 +544,7 @@ int model::async_test()
         tn = std::chrono::high_resolution_clock::now();
         time_ellapsed.push_back(std::chrono::duration_cast<std::chrono::milliseconds>(tn - ts).count());
         likelihood.push_back(newllhw());
-        std::cout << "Likelihood on held out documents: " << likelihood.back() << " at time " << time_ellapsed.back() << std::endl;
+        std::cout << "Likelihood on held out documents: " << likelihood.back() << " at time " << time_ellapsed.back() << " in iteration " << *current_iter << std::endl;
     } while (!inf_stop);
 
     delete[] p;
@@ -697,7 +698,7 @@ int model::save_model_topWords(std::string filename) const
 	}
 
 	// quick sort to sort word-topic probability
-	std::sort(words_probs.begin(), words_probs.end(), [](auto &left, auto &right){return left.second > right.second;});
+	std::sort(words_probs.begin(), words_probs.end(), [](std::pair<unsigned,unsigned> &left, std::pair<unsigned,unsigned> &right){return left.second > right.second;});
 
 	fout << "Topic " << k << "th:" << std::endl;
 	for (unsigned i = 0; i < _n_topWords; i++)
