@@ -1,0 +1,82 @@
+#include "fTree.h"
+
+fTree::fTree()
+{
+	T = 0;
+	w = NULL;
+}
+
+fTree::fTree(float* weights, short num)
+{
+	init(num);
+	constructTree(weights);
+}
+
+fTree::~fTree()
+{
+	if (w)
+		delete[] w;
+}
+
+void fTree::init(short num)
+{
+	T = num;
+	w = new float[2*T];
+}
+
+//void fTree::copy(const fTree &other)
+//{
+//	T = other.T;
+//	std::copy(&other.w[0], &other.w[T], w);
+//}
+
+void fTree::recompute(float* weights)
+{
+	constructTree(weights);
+}
+
+void fTree::constructTree(float* weights)
+{
+	// Reversely initialize elements
+	for (short i = 2 * T - 1; i > 0; --i)
+	{
+		if (i >= T)
+			w[i] = weights[i - T];
+		else
+			w[i] = w[2 * i] + w[2 * i + 1];
+	}
+}
+short fTree::sample(double u)
+{
+	short i = 1;
+	u = u * w[i];
+	while (i < T)
+	{				
+		if (u < w[2 * i])
+		{
+			i = 2 * i;
+		}
+		else
+		{ 			
+			u = u - w[2 * i];
+			i = 2 * i + 1;
+		}
+	}
+
+	return i - T;
+}
+void fTree::update(short t, float new_w)
+{
+	// t = 0..T-1, 
+	short i = t + T;
+	float delta = new_w - w[i];
+	while (i > 0) {
+		w[i] += delta;
+		i = i / 2;
+	}
+}
+float fTree::getComponent(short t)
+{
+	// t = 0..T-1
+	return w[t + T];
+}

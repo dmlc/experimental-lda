@@ -1,0 +1,31 @@
+CDIR = ../commons
+
+CC = g++
+CFLAGS = -g -I"$(CDIR)" -O3  -pthread -std=c++11 -c
+LFLAGS = -g -I"$(CDIR)" -O3 -pthread -std=c++11
+
+
+SOURCEDIR = .
+BUILDDIR = ../../build
+EXECUTABLE = ../../dist/analyser
+
+SOURCES = $(wildcard $(SOURCEDIR)/*.cpp)
+OBJECTS = $(patsubst $(SOURCEDIR)/%.cpp,$(BUILDDIR)/%.o,$(SOURCES))
+
+COMMONS = $(wildcard $(SOURCEDIR)/../commons/*.cpp)
+COBJECT = $(patsubst $(SOURCEDIR)/../commons/%.cpp,$(BUILDDIR)/%.o,$(COMMONS))
+
+all: $(EXECUTABLE)
+
+$(EXECUTABLE): $(COBJECT)  $(OBJECTS)
+	$(CC) $(LFLAGS) $^ -o $@
+
+$(OBJECTS): $(BUILDDIR)/%.o : $(SOURCEDIR)/%.cpp
+	$(CC) $(CFLAGS) $< -o $@
+
+$(COBJECT): $(BUILDDIR)/%.o : $(SOURCEDIR)/../commons/%.cpp
+	$(CC) $(CFLAGS) $< -o $@
+
+clean:
+	rm -rf $(BUILDDIR)/*
+	rm -rf $(EXECUTABLE)
