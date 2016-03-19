@@ -113,9 +113,9 @@ int sparseLDA::specific_init()
         for (unsigned short k = 0; k < K; ++k)
         {
             if (n_wk[v][k] != 0)
-                nws[v].push_back(std::pair<unsigned, unsigned short>(n_wk[v][k],k));
+                nws[v].sorted_insert(k, n_wk[v][k]);
         }
-        std::sort(nws[v].begin(), nws[v].end(), std::greater<std::pair<unsigned, unsigned>>());
+        //std::sort(nws[v].begin(), nws[v].end(), std::greater<std::pair<unsigned, unsigned>>());
     }
 
     return 0;
@@ -125,22 +125,19 @@ int sparseLDA::sampling(unsigned i)
 {
     xorshift128plus rng_;
 	
-    std::ofstream fout("log.txt");
-
     double * p = new double[K]; // temp variable for sampling
-    unsigned *nd_m = new unsigned[K];
-    unsigned *rev_mapper = new unsigned[K];
-    unsigned *fwd_mapper = new unsigned[K];
+    //unsigned *nd_m = new unsigned[K];
+    unsigned short *rev_mapper = new unsigned short[K];
+    unsigned short *fwd_mapper = new unsigned short[K];
     for (unsigned short k = 0; k < K; ++k)
     {
-        nd_m[k] = 0;
-        rev_mapper[k] = -1;
-        fwd_mapper[k] = -1;
+        //nd_m[k] = 0;
+        rev_mapper[k] = K;
+        fwd_mapper[k] = K;
     }
 
     unsigned *nwsum_local = new unsigned[K];
-    for (unsigned short k = 0; k < K; ++k)
-        nwsum_local[k] = n_k[k];
+    std::copy(n_k, n_k+K, nwsum_local);
 
     double ssum, rsum, qsum;
     double *q1 = new double[K];
@@ -148,10 +145,10 @@ int sparseLDA::sampling(unsigned i)
     ssum = 0;
     for (unsigned short k = 0; k < K; ++k)
     {
-            q1[k] = alpha / (nwsum_local[k] + Vbeta);
+            q1[k] = alphaK / (nwsum_local[k] + Vbeta);
             ssum += 1 / (nwsum_local[k] + Vbeta);
     }
-    ssum *= alpha * beta;
+    ssum *= alphaK * beta;
     std::chrono::high_resolution_clock::time_point ts, tn;
 
     unsigned iter; current_iter = &iter;	
@@ -168,17 +165,17 @@ int sparseLDA::sampling(unsigned i)
                 for (unsigned short k = 0; k < K; ++k)
                 {
                     nwsum_local[k] = n_k[k];
-                    q1[k] = alpha / (nwsum_local[k] + Vbeta);
+                    q1[k] = alphaK / (nwsum_local[k] + Vbeta);
                     ssum += 1 / (nwsum_local[k] + Vbeta);
                 }
-                ssum *= alpha * beta;
+                ssum *= alphaK * beta;
             }
 
             unsigned short kc = 0;
             rsum = 0;
             for (const auto& k : n_mks[m])
             {
-                    nd_m[k.idx] = k.val;
+                    //nd_m[k.idx] = k.val;
                     rev_mapper[k.idx] = kc++;
                     double temp = k.val / (nwsum_local[k.idx] + Vbeta);
                     rsum += temp;
@@ -192,32 +189,32 @@ int sparseLDA::sampling(unsigned i)
 
                 // remove z_ij from the count variables
                 unsigned short topic = z[m][n]; unsigned short old_topic = topic;
-                nd_m[topic] -= 1;
-                n_mks[m].decrement(rev_mapper[topic]);
+                //nd_m[topic] -= 1;
+                
 
                 // update the bucket sums
                 double denom = nwsum_local[topic] + Vbeta;
-                rsum -= (beta + nd_m[topic] * beta) / denom;
-                rsum += (nd_m[topic] * beta) / denom;
-                q1[topic] = (alpha + nd_m[topic]) / denom;
+                rsum -= beta / denom;
+                q1[topic] = (alphaK + n_mks[m].decrement(rev_mapper[topic])) / denom;
 
-                //  Divide the full sampling mass into three �buckets.�[s | r | q]
+                //  Divide the full sampling mass into three buckets. [s | r | q]
                 qsum = 0;
+                unsigned short ii=0;
                 smtx[w].lock_shared();
-                for (unsigned short k = 0; k < nws[w].size(); ++k)
+                for (const auto &k : nws[w])
                 {
-                    fwd_mapper[k] = nws[w][k].second;
-                    p[k] = nws[w][k].first*q1[nws[w][k].second];
-                        qsum += p[k];
+                    fwd_mapper[ii] = k.idx;
+                    p[ii] = k.val*q1[k.idx];
+                    qsum += p[ii++];
                 }
                 smtx[w].unlock_shared();
                 double total_mass = qsum + rsum + ssum;
                 double u = rng_.rand_double() * total_mass;
-
+		
                 if (u < ssum)	//smoothing only bucket
                 {
                         // In this case, we can step through each topic, calculating and adding up	for that topic, until we reach a value greater than u
-                        u /= alpha * beta;
+                        u /= alphaK * beta;
                         for (topic = -1; u > 0; u -= 1 / (nwsum_local[++topic] + Vbeta));
                 }
                 else if (u < ssum + rsum) //document topic bucket
@@ -234,7 +231,6 @@ int sparseLDA::sampling(unsigned i)
                             break;
                         }
                     }
-
                 }
                 else //topic word bucket
                 {
@@ -242,38 +238,38 @@ int sparseLDA::sampling(unsigned i)
                         for (topic = -1; u > 0; u -= p[++topic] );
                         topic = fwd_mapper[topic];
                 }
+		
 
                 //update the bucket sums
                 denom = nwsum_local[topic] + Vbeta;
-                rsum -= (nd_m[topic] * beta) / denom;
-                rsum += (beta + nd_m[topic] * beta) / denom;
-                q1[topic] = (alpha + nd_m[topic] + 1) / denom;
+                rsum += beta / denom;
 
                 // add newly estimated z_i to count variables
                 if (topic!=old_topic)
                 {
-                    if(nd_m[topic] == 0)
+                    if(rev_mapper[topic] == K)
                     {
                             rev_mapper[topic] = n_mks[m].push_back(topic, 1);
+                	    q1[topic] = (alphaK + 1) / denom;
                     }
                     else
                     {
-                            n_mks[m].increment(rev_mapper[topic]);
+                	    q1[topic] = (alphaK + n_mks[m].increment(rev_mapper[topic])) / denom;
                     }
-                    nd_m[topic] += 1;
-                    if (nd_m[old_topic] == 0)
+                    //nd_m[topic] += 1;
+                    if (n_mks[m].val_in(rev_mapper[old_topic]) == 0)
                     {
 			unsigned short pos = n_mks[m].erase_pos(rev_mapper[old_topic]);
                         rev_mapper[pos] = rev_mapper[old_topic];
-                        rev_mapper[old_topic] = -1;                        
+                        rev_mapper[old_topic] = K;                        
                     }
 
                     cbuff[nst*(w%ntt)+i].push(delta(w,old_topic,topic));
                 }
                 else
                 {
-                    n_mks[m].increment(rev_mapper[topic]);
-                    nd_m[topic] += 1;
+                    q1[topic] = (alphaK +  n_mks[m].increment(rev_mapper[topic])) / denom;
+                    //nd_m[topic] += 1;
                 }
 
                 z[m][n] = topic;
@@ -281,17 +277,17 @@ int sparseLDA::sampling(unsigned i)
             for (const auto& k : n_mks[m])
             {
                 q1[k.idx] -= k.val / (nwsum_local[k.idx] + Vbeta);
-                nd_m[k.idx] = 0;
-                rev_mapper[k.idx] = -1;
+                //nd_m[k.idx] = 0;
+                rev_mapper[k.idx] = K;
             }
         }
         tn = std::chrono::high_resolution_clock::now();
-        std::cout << "In thread " << i << " at iteration " << iter << " ..." 
-                          << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(tn - ts).count() << std::endl;
+        //std::cout << "In thread " << i << " at iteration " << iter << " ..." 
+        //                  << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(tn - ts).count() << std::endl;
     }
 
     delete[] p;
-    delete[] nd_m;
+    //delete[] nd_m;
     delete[] rev_mapper;
     delete[] fwd_mapper;
 
@@ -310,11 +306,6 @@ int sparseLDA::updater(unsigned i)
             {
                 delta temp = cbuff[i*nst + tn].front();
                 cbuff[i*nst + tn].pop();
-                if (temp.new_topic >= K || temp.old_topic >= K)
-                {
-                    std::cout << "I am crazy!" << std::endl;
-                    continue;
-                }
                 n_wk[temp.word][temp.old_topic] -= 1;
                 n_wk[temp.word][temp.new_topic] += 1;
                 n_k[temp.old_topic] -= 1;
@@ -323,71 +314,8 @@ int sparseLDA::updater(unsigned i)
                 //n_k[temp.new_topic].fetch_add(+1);
 
                 smtx[temp.word].lock();
-                //maintaining the correct encoding of nws
-                /* Decrement after which it is sorted */
-                unsigned short k = 0;
-                for (k = 0; k < nws[temp.word].size(); ++k)
-                {
-                    if (temp.old_topic == nws[temp.word][k].second)
-                    {
-                        nws[temp.word][k].first -= 1;
-                        break;
-                    }
-                }	
-                for (++k; k < nws[temp.word].size(); ++k)
-                {
-                    if (nws[temp.word][k-1].first >= nws[temp.word][k].first)
-                        break;
-                    else
-                    {
-                        //smtx[temp.word].lock();
-                        auto copy_temp = nws[temp.word][k - 1];
-                        nws[temp.word][k - 1] = nws[temp.word][k];
-                        nws[temp.word][k] = copy_temp;
-                        //smtx[temp.word].unlock();
-                    }
-                }
-
-                /* Remove zeros */
-                while (nws[temp.word].size() && nws[temp.word].back().first == 0)	// remove zeros if any
-                {
-                    //smtx[temp.word].lock();
-                    nws[temp.word].pop_back();
-                    nws[temp.word].shrink_to_fit();
-                    //smtx[temp.word].unlock();
-                }
-
-                /* increment after which it is sorted as well */
-                for (k = 0; k < nws[temp.word].size(); ++k)
-                {
-                    if (temp.new_topic == nws[temp.word][k].second)
-                    {
-                        nws[temp.word][k].first += 1;
-                        break;
-                    }
-                }
-                if (k >= nws[temp.word].size())	// if not found in existing topics
-                {
-                    //smtx[temp.word].lock();
-                    nws[temp.word].push_back(std::pair<int, int>(1, temp.new_topic));
-                    //smtx[temp.word].unlock();
-                }
-                else
-                {
-                    for (; k > 0; --k)
-                    {
-                        if (nws[temp.word][k - 1].first >= nws[temp.word][k].first)
-                                break;
-                        else
-                        {
-                                //smtx[temp.word].lock();
-                                auto copy_temp = nws[temp.word][k - 1];
-                                nws[temp.word][k - 1] = nws[temp.word][k];
-                                nws[temp.word][k] = copy_temp;
-                                //smtx[temp.word].unlock();
-                        }
-                    }
-                }
+                nws[temp.word].sorted_dec(temp.old_topic);
+                nws[temp.word].sorted_inc(temp.new_topic);
                 smtx[temp.word].unlock();
             }
         }

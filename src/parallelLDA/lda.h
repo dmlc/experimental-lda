@@ -26,7 +26,8 @@ class sparseLDA : public model
 {
 public:
 	shared_mutex* smtx;
-	std::vector< std::vector< std::pair<unsigned short, unsigned> > > nws;
+	std::vector< spvector_sorted > nws;
+	//std::vector< std::vector< std::pair<unsigned short, unsigned> > > nws;
 	
 	// estimate LDA model using sparse strategy of Yao09
 	int specific_init();
