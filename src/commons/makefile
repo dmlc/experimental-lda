@@ -6,3 +6,6 @@ gcc:
 
 intel:
 	@echo Nothing here -- just common files
+
+inteltogether:
+	@echo Nothing here -- just common files

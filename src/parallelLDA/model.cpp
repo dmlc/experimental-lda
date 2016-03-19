@@ -544,7 +544,11 @@ int model::async_test()
         tn = std::chrono::high_resolution_clock::now();
         time_ellapsed.push_back(std::chrono::duration_cast<std::chrono::milliseconds>(tn - ts).count());
         likelihood.push_back(newllhw());
-        std::cout << "Likelihood on held out documents: " << likelihood.back() << " at time " << time_ellapsed.back() << " in iteration " << *current_iter << std::endl;
+        std::cout << "Likelihood on held out documents: " << likelihood.back() << " at time " << time_ellapsed.back();
+	if(current_iter)
+		std::cout << " in iteration " << *current_iter << std::endl;
+	else
+		std::cout << std::endl;
     } while (!inf_stop);
 
     delete[] p;

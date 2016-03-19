@@ -5,7 +5,7 @@ DEBUG = -DNDEBUG
 INTEL_CC = icc
 INTEL_CFLAGS = -I"$(CDIR)" -O2 -DNDEBUG -march=core-avx2 -std=c++14 -inline-factor=500 -no-inline-max-size -no-inline-max-total-size -use-intel-optimized-headers -parallel -opt-prefetch=4 -opt-mem-layout-trans=2 -c
 INTEL_LFLAGS = -I"$(CDIR)" -O2 -DNDEBUG -march=core-avx2 -std=c++14 -inline-factor=500 -no-inline-max-size -no-inline-max-total-size -use-intel-optimized-headers -parallel -opt-prefetch=4 -opt-mem-layout-trans=2
-
+NTEL_TFLAGS = -I"$(CDIR)" -O3 -ipo -xHOST -no-prec-div -DNDEBUG -std=c++11 -inline-factor=500 -no-inline-max-size -no-inline-max-total-size -use-intel-optimized-headers -parallel -opt-prefetch=4 -opt-mem-layout-trans=3
 
 GNU_CC = g++
 GNU_CFLAGS = -I"$(CDIR)" -O3 -march=core-avx2 -pthread -std=c++14 -c
@@ -43,6 +43,9 @@ $(OBJECTS): $(BUILDDIR)/%.o : $(SOURCEDIR)/%.cpp
 
 $(COBJECT): $(BUILDDIR)/%.o : $(SOURCEDIR)/../commons/%.cpp
 	$(CC) $(CFLAGS) $< -o $@
+
+inteltogether: intel
+#$(INTEL_CC) $(INTEL_TFLAGS) $(SOURCES) $(COMMONS) -o $(EXECUTABLE)
 
 clean:
 	rm -rf $(BUILDDIR)/*

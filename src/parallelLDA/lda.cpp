@@ -97,6 +97,8 @@ int simpleLDA::sampling(unsigned i)
     delete[] p;
     delete[] nd_m;
     delete[] rev_mapper;
+
+    current_iter = NULL;
     
     return 0;
 }
@@ -292,6 +294,8 @@ int sparseLDA::sampling(unsigned i)
     delete[] nd_m;
     delete[] rev_mapper;
     delete[] fwd_mapper;
+
+    current_iter = NULL;
     
     return 0;
 }
@@ -540,6 +544,8 @@ int aliasLDA::sampling(unsigned i)
     delete[] nd_m;
     delete[] rev_mapper;
 
+    current_iter = NULL;
+
     return 0;
 }
 
@@ -681,6 +687,8 @@ int FTreeLDA::sampling(unsigned i)
     //delete[] nd_m;
     delete[] rev_mapper;
 
+    current_iter = NULL;
+    
     return 0;	
 }
 int FTreeLDA::updater(unsigned i)
@@ -874,6 +882,9 @@ int lightLDA::sampling(unsigned i)
     delete[] p;
     delete[] nd_m;
     delete[] rev_mapper;
+
+    current_iter = NULL;
+
     return 0;
 }
 

@@ -14,6 +14,9 @@ all: dir compile
 intel: CTYPE = intel
 intel: dir compile
 
+inteltogether: CTYPE = inteltogether
+inteltogether: dir compile
+
 
 dir:
 	@echo Setting up directories
