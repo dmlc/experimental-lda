@@ -10,8 +10,8 @@ INTEL_LFLAGS = $(DEBUG) -I"$(CDIR)" -O3 -march=core-avx2 -std=c++14 -inline-fact
 INTEL_TFLAGS = -I"$(CDIR)" -fast -DNDEBUG -std=c++11 -inline-factor=500 -no-inline-max-size -no-inline-max-total-size -use-intel-optimized-headers -parallel -qopt-prefetch=4 -qopt-mem-layout-trans=3 -pthread 
 
 GNU_CC = g++
-GNU_CFLAGS = $(DEBUG) -I"$(CDIR)" -O3 -march=core-avx2 -ffloat-store -pthread -std=c++14 -c
-GNU_LFLAGS = $(DEBUG) -I"$(CDIR)" -O3 -march=core-avx2 -ffloat-store -pthread -std=c++14
+GNU_CFLAGS = $(DEBUG) -I"$(CDIR)" -O3 -march=corei7 -ffloat-store -pthread -std=c++14 -c
+GNU_LFLAGS = $(DEBUG) -I"$(CDIR)" -O3 -march=corei7 -ffloat-store -pthread -std=c++14
 
 CC = $(GNU_CC)
 CFLAGS = $(GNU_CFLAGS)

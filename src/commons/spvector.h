@@ -3,6 +3,7 @@
 
 class spvector
 {
+protected:    
     struct sp_container
     {
 	unsigned short idx;  //array containing the id
@@ -42,7 +43,7 @@ public:
     }
 
     /*** capacity ***/
-    unsigned short size() const
+    inline unsigned short size() const
     {
 	return _size;
     }
@@ -72,12 +73,12 @@ public:
 	}
     }
 
-    unsigned short capacity() const
+    inline unsigned short capacity() const
     {
 	return _capacity;
     }
 
-    bool empty() const
+    inline bool empty() const
     {
         return _size == 0;
     }
@@ -162,27 +163,27 @@ public:
 	return _data[pos].idx;
     }
 
-    unsigned val_in(unsigned short pos) const
+    inline unsigned val_in(unsigned short pos) const
     {
 	return _data[pos].val;
     }
 
-    unsigned short idx_front()
+    inline unsigned short idx_front()
     {
 	return _data[0].idx;
     }
 
-    unsigned val_front()
+    inline unsigned val_front()
     {
 	return _data[0].val;
     }
 
-    unsigned short idx_back()
+    inline unsigned short idx_back()
     {
 	return _data[_size - 1].idx;
     }
 
-    unsigned val_back()
+    inline unsigned val_back()
     {
 	return _data[_size - 1].val;
     }
@@ -201,7 +202,7 @@ public:
 	return pos;
     }
 
-    void pop_back()
+    inline void pop_back()
     {
 	_size--;
     }
@@ -279,6 +280,73 @@ public:
 	//if (0 <= pos && pos < _size) {
 	_data[pos].val = val;
 	//}
+    }
+};
+
+class spvector_sorted : public spvector
+{
+public:
+    unsigned short sorted_insert(unsigned short idx, unsigned val)
+    {
+	if (_size == _capacity) 
+            resize(_size);
+        
+        unsigned short pos=0;
+        /* find correct position to insert */
+        while( (pos <_size) && (val <= _data[pos].val) )
+            ++pos;
+        
+        for (unsigned short k=_size; k > pos; --k)
+            _data[k] = _data[k-1];
+		
+	_data[pos].idx = idx;
+	_data[pos].val = val;
+	++_size;
+
+	return pos;
+    }
+    
+    int sorted_inc(unsigned short idx)
+    {
+        unsigned short k=0;
+        /* increment after which it is sorted as well */
+        while( (k <_size) && (idx != _data[k].idx) )
+            ++k;
+        
+        if (k >= _size)	// if not found in existing topics
+            this->push_back(idx, 1);
+        else
+        {
+            _data[k].val += 1;
+            while( (k > 0) && (_data[k - 1].val < _data[k].val) )
+            {
+                std::swap(_data[k-1], _data[k]);
+                --k;
+            }
+        }
+        
+        return 0;
+    }
+    
+    int sorted_dec(unsigned short idx)
+    {
+        unsigned short k=0;
+        /* decrement after which it is sorted as well */
+        while( (k <_size) && (idx != _data[k].idx) )
+            ++k;
+        
+        _data[k++].val -= 1;
+        
+        while( (k < _size) && (_data[k - 1].val < _data[k].val) )
+        {
+            std::swap(_data[k-1], _data[k]);
+            ++k;
+        }
+        
+        if (_data[_size-1].val == 0)	/* If zeroRemove zeros */
+            --_size;
+
+        return 0;
     }
 };
 
