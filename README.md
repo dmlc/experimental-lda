@@ -28,24 +28,6 @@ We will show how to run our LDA on an [UCI bag of words dataset](https://archive
      make
    ```
 
-   if you have Intel Compiler, then you can instead
-
-   ```bash
-     make intel
-   ```
-
-   Also you can selectively compile individual modules by specifying
-
-   ```bash
-     make <module-name>
-   ```
-
-   or clean individually by
-
-   ```bash
-     make clean-<module-name>
-   ```
-
 2. Download example dataset from UCI repository. For this a script has been provided.
 
    ```bash
@@ -72,6 +54,32 @@ We will show how to run our LDA on an [UCI bag of words dataset](https://archive
    3. `aliasLDA`: Alias LDA
    4. `FTreeLDA`: F++LDA (inspired from [Yu14](http://arxiv.org/abs/1412.4986)
    5. `lightLDA`: light LDA of [Yuan14](http://arxiv.org/abs/1412.1576)
+
+The make file has some useful features:
+
+- if you have Intel Compiler, then you can instead
+
+   ```bash
+     make intel
+   ```
+
+- or if you want Intel's cross-file optimization (ipo), then hit
+   
+   ```bash
+     make intel
+   ```
+
+- Also you can selectively compile individual modules by specifying
+
+   ```bash
+     make <module-name>
+   ```
+
+- or clean individually by
+
+   ```bash
+     make clean-<module-name>
+   ```
 
 ## Performance
 Based on our evaluation F++LDA works the best in terms of both speed and perplexity on a held-out dataset. For example on Amazon EC2 c4.8xlarge, we obtained more than 24 million/tokens per second.
