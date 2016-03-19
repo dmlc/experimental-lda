@@ -18,6 +18,7 @@
 
 ## Requirements
 1. gcc >= 5.0 or Intel Compiler 2016 for using C++14 features
+2. split >= 8.21 (part of GNU coreutils)
 
 ## How to use
 We will show how to run our LDA on an [UCI bag of words dataset](https://archive.ics.uci.edu/ml/datasets/Bag+of+Words)
@@ -66,7 +67,7 @@ The make file has some useful features:
 - or if you want Intel's cross-file optimization (ipo), then hit
    
    ```bash
-     make intel
+     make inteltogether
    ```
 
 - Also you can selectively compile individual modules by specifying
