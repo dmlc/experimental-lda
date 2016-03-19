@@ -1,3 +1,4 @@
+INTELTOGETHER
 Running LDA inference using FTreeLDA
 For dataset pubmed
 For number of iterations 1000
