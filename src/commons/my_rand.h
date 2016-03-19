@@ -83,7 +83,7 @@ public:
     {
         //return new GammaDistribution(rr, 1.0).sample();
 	double bb, cc, dd;
-	double uu, vv, ww, xx, yy, zz;
+	double uu, vv, xx, yy;
         double result;
 
 	if (rr <= 0.0)                  // Not well defined, set to zero and skip.

@@ -48,7 +48,7 @@ int dataset::read_data(std::string dfile, std::map<std::string, unsigned> * pwor
     // set number of words to current dictionary size
     V = pword2id->size();
     
-    int temp_words[1000000];
+    unsigned temp_words[1000000];
     for (unsigned i = 0; i < M; i++)
     {
 	std::getline(fin, line);

@@ -189,13 +189,19 @@ int sparseLDA::sampling(unsigned i)
 
                 // remove z_ij from the count variables
                 unsigned short topic = z[m][n]; unsigned short old_topic = topic;
+                nwsum_local[topic] -= 1;
                 //nd_m[topic] -= 1;
                 
 
                 // update the bucket sums
+                unsigned nd_mk = n_mks[m].decrement(rev_mapper[topic]);
                 double denom = nwsum_local[topic] + Vbeta;
-                rsum -= beta / denom;
-                q1[topic] = (alphaK + n_mks[m].decrement(rev_mapper[topic])) / denom;
+                ssum -= (alphaK * beta) / (denom + 1);
+                ssum += (alphaK * beta) / denom;
+                rsum -= (beta + nd_mk * beta) / (denom + 1);
+                rsum += (nd_mk * beta) / denom;
+                //rsum -= beta / denom;
+                q1[topic] = (alphaK + nd_mk) / denom;
 
                 //  Divide the full sampling mass into three buckets. [s | r | q]
                 qsum = 0;
@@ -241,20 +247,28 @@ int sparseLDA::sampling(unsigned i)
 		
 
                 //update the bucket sums
+                nwsum_local[topic] += 1;
                 denom = nwsum_local[topic] + Vbeta;
-                rsum += beta / denom;
+                ssum -= (alpha * beta) / (denom - 1);
+                ssum += (alpha * beta) / denom;
+                //rsum += beta / denom;
 
                 // add newly estimated z_i to count variables
                 if (topic!=old_topic)
                 {
                     if(rev_mapper[topic] == K)
                     {
-                            rev_mapper[topic] = n_mks[m].push_back(topic, 1);
-                	    q1[topic] = (alphaK + 1) / denom;
+                        rev_mapper[topic] = n_mks[m].push_back(topic, 1);
+                	rsum -= (beta) / (denom - 1);
+                        rsum += (beta + beta) / denom;
+                        q1[topic] = (alphaK + 1) / denom;
                     }
                     else
                     {
-                	    q1[topic] = (alphaK + n_mks[m].increment(rev_mapper[topic])) / denom;
+                        nd_mk = n_mks[m].increment(rev_mapper[topic]);
+                        rsum -= (nd_mk * beta) / (denom - 1);
+                        rsum += (beta + nd_mk * beta) / denom;
+                	q1[topic] = (alphaK + nd_mk) / denom;
                     }
                     //nd_m[topic] += 1;
                     if (n_mks[m].val_in(rev_mapper[old_topic]) == 0)
@@ -268,7 +282,10 @@ int sparseLDA::sampling(unsigned i)
                 }
                 else
                 {
-                    q1[topic] = (alphaK +  n_mks[m].increment(rev_mapper[topic])) / denom;
+                    nd_mk = n_mks[m].increment(rev_mapper[topic]);
+                    rsum -= (nd_mk * beta) / (denom - 1);
+                    rsum += (beta + nd_mk * beta) / denom;
+                    q1[topic] = (alphaK +  nd_mk) / denom;
                     //nd_m[topic] += 1;
                 }
 
