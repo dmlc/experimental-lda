@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DATASETS="pubmed" 
-METHODS="FTreeLDA"
+METHODS="FTreeLDA lightLDA aliasLDA sparseLDA"
 NUM_ITER="1000"
 NUM_TOPICS="1000"
 NST="50"

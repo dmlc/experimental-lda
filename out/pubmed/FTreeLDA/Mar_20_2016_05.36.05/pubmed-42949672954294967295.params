@@ -5,4 +5,4 @@ num-docs=8190000
 num-words=128847
 num-iters=1000
 num-sampling-threads=50
-num-table-threads=20
+num-table-threads=15
