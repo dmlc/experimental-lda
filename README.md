@@ -58,13 +58,13 @@ We will show how to run our LDA on an [UCI bag of words dataset](https://archive
 
 The make file has some useful features:
 
-- if you have Intel Compiler, then you can instead
+- if you have Intel&reg C++ Compiler, then you can instead
 
    ```bash
      make intel
    ```
 
-- or if you want Intel's cross-file optimization (ipo), then hit
+- or if you want to use Intel&reg C++ Compiler's cross-file optimization (ipo), then hit
    
    ```bash
      make inteltogether
