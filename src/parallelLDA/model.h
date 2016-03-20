@@ -151,10 +151,6 @@ protected:
     int save_model_topWords(std::string filename) const;// model_name.twords: Top words in each top
     int save_model_phi(std::string filename) const;		// model_name.phi: topic-word distributions
 
-    /****** Some functions for debugging ******/
-    int sanity() const;
-    int dump();
-    int dump2();
 };
 
 #endif

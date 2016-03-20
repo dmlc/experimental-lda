@@ -1,16 +1,15 @@
 #include "stringtokenizer.h"
  
-StringTokenizer::StringTokenizer(std::string str, std::string delim, bool returnDelims) : str(str), delim(delim), returnDelims(returnDelims), idx(0), count(-1)
+StringTokenizer::StringTokenizer(std::string str, std::string delim, bool returnDelims) : str(str), delim(delim), returnDelims(returnDelims), idx(0), count(UINT_MAX)
 {	}
 
-int StringTokenizer::count_tokens()
+unsigned StringTokenizer::count_tokens()
 {
-	if (count == -1)
+	if (count == UINT_MAX)
 	{
 		count = 0;
-		int delimCount = 0;
+		unsigned delimCount = 0;
 		bool prevIsDelim = true;
-		int tmpIdx = idx;
 
 		for (unsigned i = 0; i < str.length(); ++i)
 		{
@@ -67,7 +66,7 @@ std::string StringTokenizer::nextToken()
 		//if something left in the string
 		if (idx < str.length())
 		{
-			int start = idx;
+			unsigned start = idx;
 			while (idx < str.length() && delim.find_first_of(str[idx]) == std::string::npos){
 				++idx;
 			}

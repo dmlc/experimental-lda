@@ -47,18 +47,17 @@ int dataset::read_data(std::string dfile, std::map<std::string, unsigned> * pwor
     
     // set number of words to current dictionary size
     V = pword2id->size();
-    
-    int temp_words[1000000];
+   
+    unsigned temp_words[1000000];
     for (unsigned i = 0; i < M; i++)
     {
 	std::getline(fin, line);
-
 	StringTokenizer strtok(line);
 		
 	unsigned length = strtok.count_tokens();
 	if (length <= 0)
 	    std::runtime_error("Error: Invalid document object! " + i);
-         
+        
 	unsigned js=0;
 	for (unsigned j = 0; j < length; ++j)
 	{
@@ -69,13 +68,13 @@ int dataset::read_data(std::string dfile, std::map<std::string, unsigned> * pwor
             if (it == pword2id->end() || key < it->first)
             {
 		// word not found, i.e., new word
-                temp_words[j] = pword2id->size();
-		pword2id->insert(it, std::pair<std::string, unsigned>(key, pword2id->size()));
+                temp_words[js] = pword2id->size();
+		pword2id->insert(it, std::map<std::string, unsigned>::value_type(key, pword2id->size()));
             }
             else
             {
                 // Give the word current id
-                temp_words[j] = it->second;
+                temp_words[js] = it->second;
             }
             ++js;
 	}

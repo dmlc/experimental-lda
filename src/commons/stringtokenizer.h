@@ -6,6 +6,7 @@
 #ifndef _STRINGTOKENIZER_H
 #define _STRINGTOKENIZER_H
 
+#include <climits>
 #include <string>
 #include <vector>
 #include <stdexcept>
@@ -16,13 +17,13 @@ private:
 	std::string str;
 	std::string delim;
 	bool returnDelims;
-	int count;
-    unsigned idx;
+	unsigned count;
+	unsigned idx;
 
 public:
 	StringTokenizer(std::string str, std::string delim = " \t\n\r\f", bool returnDelims = false);
        
-    int count_tokens();
+    	unsigned count_tokens();
 	bool hasMoreElements();
 	bool hasMoreTokens();
 	const char* nextElement();

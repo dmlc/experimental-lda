@@ -54,7 +54,7 @@ model::~model()
 
     if (z)
     {
-        for (int m = 0; m < M; m++)
+        for (unsigned m = 0; m < M; m++)
         {
             if (z[m])
             {
@@ -66,7 +66,7 @@ model::~model()
 
     if (n_wk)
     {
-        for (int w = 0; w < V; ++w)
+        for (unsigned w = 0; w < V; ++w)
         {
             if (n_wk[w])
             {
@@ -80,7 +80,7 @@ model::~model()
 
     if (test_z)
     {
-        for (int m = 0; m < test_M; m++)
+        for (unsigned m = 0; m < test_M; m++)
         {
             if (test_z[m])
             {
@@ -92,7 +92,7 @@ model::~model()
 
     if (test_n_mk)
     {
-        for (int m = 0; m < test_M; m++)
+        for (unsigned m = 0; m < test_M; m++)
         {
             if (test_n_mk[m])
             {
@@ -694,7 +694,7 @@ int model::save_model_topWords(std::string filename) const
     {
         std::vector<std::pair<unsigned, unsigned> > words_probs(V);
         std::pair<unsigned, unsigned> word_prob;
-        for (int w = 0; w < V; w++)
+        for (unsigned w = 0; w < V; w++)
         {
             word_prob.first = w;
             word_prob.second = n_wk[w][k];
@@ -743,104 +743,3 @@ int model::save_model_phi(std::string filename) const
     return 0;
 }
 
-int model::sanity() const
-{
-	long tott = 0;
-        for(int m = 0; m < M; ++m)
-	{
-		int sumd = 0;
-		for (const auto& t : n_mks[m])
-			sumd += t.val;
-		if (sumd == trngdata->docs[m]->length)
-			tott += sumd;
-		else
-			std::cout<<"Length mismatch at doc: "<<m<<std::endl;
-        }
-	std::cout<<"Total number of training tokens: "<<tott <<std::endl;
-	return 0;
-}
-
-int model::dump()
-{
-	std::ifstream fin("phi.txt");
-
-	if (!fin.is_open()) {
-		std::cout << "Cannot open file to read! " << std::endl;
-		return 0;
-	}
-
-	std::string line;
-	int countv = 0;
-
-	while (!fin.eof())
-	{
-		std::string word_text;
-		long wordID, topic, count;
-		std::getline(fin, line);
-		std::stringstream ss(line);
-		ss >> wordID;
-		ss >> word_text;
-		//ss >> wordID;
-		while (ss >> topic)
-		{
-			ss >> count;
-			//std::cout << wordID << count << std::endl;
-			wordID = word2id[word_text];
-			n_wk[wordID][topic] = count;
-		}
-		countv++;
-	}
-
-	std::cout << "Done with reading document data with words:" << countv << std::endl;
-	fin.close();
-
-	return 0;
-}
-
-int model::dump2()
-{
-	std::ifstream fin("new-state.txt");
-
-	if (!fin.is_open()) {
-		std::cout << "Cannot open file to read! " << std::endl;
-		return 0;
-	}
-
-	for (int v = 0; v < V; ++v)
-	{
-		for (int k = 0; k < K; ++k)
-			n_wk[v][k] = 0;
-	}
-	for (int k = 0; k < K; ++k)
-		n_k[k] = 0;
-
-	std::string line;
-	while (!fin.eof())
-	{
-		std::string word_text;
-		long docID, pos, wordID, topic;
-		std::getline(fin, line);
-		std::stringstream ss(line);
-		ss >> docID;
-		ss >> word_text;
-		ss >> pos;
-		ss >> topic;
-		ss >> word_text;
-		ss >> topic;
-		wordID = word2id[word_text];
-		//std::cout << docID << " " << pos << " " << word_text << " " << topic << std::endl;
-		z[docID][pos] = topic;
-		n_wk[wordID][topic]++;
-		n_k[topic]++;
-	}
-
-	int countv = 0;
-	for (int k = 0; k < K; ++k)
-		countv += n_k[k];
-
-
-	std::cout << "Done with reading document data with words:" << countv << std::endl;
-	fin.close();
-
-	return 0;
-}
