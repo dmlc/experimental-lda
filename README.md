@@ -87,6 +87,12 @@ Based on our evaluation F++LDA works the best in terms of both speed and perplex
 
 ### Datasets
 
+| Command | Description |
+| --- | --- |
+| git status | List all new or modified files |
+| git diff | Show file differences that haven't been staged |
+
+
    |  Dataset     |  V        |  L              |  D           |  L/V      |  L/D      |
    | ------------ | --------- | --------------- | ------------ | --------- | --------- |
    |  20 News     |  18,127   |  1,191,840	   |	11,266	   |	65.75    |  105.79   |
