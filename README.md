@@ -85,7 +85,7 @@ The make file has some useful features:
 ## Performance
 Based on our evaluation F++LDA works the best in terms of both speed and perplexity on a held-out dataset. For example on Amazon EC2 c4.8xlarge, we obtained more than 25 million/tokens per second. Below we provide performance comparison against various inference procedures on publicaly available datasets.
 
-### Datasets
+#### Datasets
 
 |  Dataset     |  V        |  L              |  D           |  L/V      |  L/D      |
 | ------------ | --------: | --------------: | -----------: | --------: | --------: |
@@ -102,6 +102,6 @@ Based on our evaluation F++LDA works the best in terms of both speed and perplex
    the number of documents, `L/V` indicates the average number of occurrences of a word, `L/D` indicates the average length of a
    document.
   
-### log-Perplexity with time
+#### log-Perplexity with time
 
 <img src=https://raw.githubusercontent.com/dmlc/experimental-lda/master/nytimes_llh_v_time.jpg width=400/>
