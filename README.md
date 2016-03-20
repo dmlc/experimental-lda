@@ -17,7 +17,7 @@
 
 
 ## Requirements
-1. gcc >= 5.0 or Intel Compiler 2016 for using C++14 features
+1. gcc >= 5.0 or Intel&reg; C++ Compiler 2016 for using C++14 features
 2. split >= 8.21 (part of GNU coreutils)
 
 ## How to use
@@ -58,13 +58,13 @@ We will show how to run our LDA on an [UCI bag of words dataset](https://archive
 
 The make file has some useful features:
 
-- if you have Intel&reg C++ Compiler, then you can instead
+- if you have Intel&reg; C++ Compiler, then you can instead
 
    ```bash
      make intel
    ```
 
-- or if you want to use Intel&reg C++ Compiler's cross-file optimization (ipo), then hit
+- or if you want to use Intel&reg; C++ Compiler's cross-file optimization (ipo), then hit
    
    ```bash
      make inteltogether
