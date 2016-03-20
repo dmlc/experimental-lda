@@ -86,6 +86,7 @@ The make file has some useful features:
 Based on our evaluation F++LDA works the best in terms of both speed and perplexity on a held-out dataset. For example on Amazon EC2 c4.8xlarge, we obtained more than 25 million/tokens per second. Below we provide performance comparison against various inference procedures on publicaly available datasets.
 
 ### Datasets
+
 | Dataset | V | L | D | L/V | L/D |
    |20 News    |  18,127   |  1,191,840	|	11,266	|	65.75    |  105.79   |
    |HEP        |  37,729	|	1,548,935	|	27,770	|	41.05	   |	 55.78 	|
