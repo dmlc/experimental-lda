@@ -93,16 +93,16 @@ Based on our evaluation F++LDA works the best in terms of both speed and perplex
 | git diff   | Show file differences that haven't been staged |
 
 
-   |  Dataset     |  V        |  L              |  D           |  L/V      |  L/D      |
-   | ------------ | --------- | --------------- | ------------ | --------- | --------- |
-   |  20 News     |  18,127   |  1,191,840	   |	11,266	   |	65.75    |  105.79   |
-   |  HEP         |  37,729	|	1,548,935	   |	27,770	   |	41.05	   |	55.78 	|
-   |  Reuters     |	69,973   |	2,624,373      |	14,377	   |	37.51	   |	182.54 	|
-   |  Enron       |	28,102	|	6,412,174      |	40,861	   |	228.18   |	160.86   |
-   |  ACM         |	133,325  |  12,258,310     |	132,032	   |	41.83    |  93.06    |
-   |  NY Times    |  101,330  |  99,542,127     |  299,753     |  982.36   |  332.08   |
-   |  PubMed      |  141,043  |  737,869,085    |  8,200,000   |  5,231.52	|	89.98    |
-   |  Wikipedia   |	210,218  |  1,614,349,889  |  3,731,325   |  7,679.41	|	432.65 	|
+|  Dataset     |  V        |  L              |  D           |  L/V      |  L/D      |
+| ------------ | --------- | --------------- | ------------ | --------- | --------- |
+|  20 News     |  18,127   |  1,191,840	   |	11,266	   |	65.75    |  105.79   |
+|  HEP         |  37,729	|	1,548,935	   |	27,770	   |	41.05	   |	55.78 	|
+|  Reuters     |	69,973   |	2,624,373      |	14,377	   |	37.51	   |	182.54 	|
+|  Enron       |	28,102	|	6,412,174      |	40,861	   |	228.18   |	160.86   |
+|  ACM         |	133,325  |  12,258,310     |	132,032	   |	41.83    |  93.06    |
+|  NY Times    |  101,330  |  99,542,127     |  299,753     |  982.36   |  332.08   |
+|  PubMed      |  141,043  |  737,869,085    |  8,200,000   |  5,231.52	|	89.98    |
+|  Wikipedia   |	210,218  |  1,614,349,889  |  3,731,325   |  7,679.41	|	432.65 	|
 
    Experimental datasets and their statistics. `V` denotes vocabulary size, `L` denotes the number of training tokens, `D` denotes
    the number of documents, `L/V` indicates the average number of occurrences of a word, `L/D` indicates the average length of a
