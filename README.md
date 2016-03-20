@@ -88,6 +88,7 @@ Based on our evaluation F++LDA works the best in terms of both speed and perplex
 ### Datasets
 
    |  Dataset     |  V        |  L              |  D           |  L/V      |  L/D      |
+   | ------------ | --------- | --------------- | ------------ | --------- | --------- |
    |  20 News     |  18,127   |  1,191,840	   |	11,266	   |	65.75    |  105.79   |
    |  HEP         |  37,729	|	1,548,935	   |	27,770	   |	41.05	   |	55.78 	|
    |  Reuters     |	69,973   |	2,624,373      |	14,377	   |	37.51	   |	182.54 	|
