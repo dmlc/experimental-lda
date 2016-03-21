@@ -1,7 +1,7 @@
 #ifndef _CIRCQUEUE_H
 #define _CIRCQUEUE_H
 
-#define MAX 409600
+#define MAX 4096
 
 #include <atomic>
 #include <iostream>
