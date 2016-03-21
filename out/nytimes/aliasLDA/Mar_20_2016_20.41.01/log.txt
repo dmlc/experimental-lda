@@ -1,3 +1,4 @@
+INTELTOGETHER
 Running LDA inference using aliasLDA
 For dataset nytimes
 For number of iterations 1000
