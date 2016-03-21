@@ -17,7 +17,7 @@
 
 
 ## Requirements
-1. gcc >= 5.0 or Intel Compiler 2016 for using C++14 features
+1. gcc >= 5.0 or Intel&reg; C++ Compiler 2016 for using C++14 features
 2. split >= 8.21 (part of GNU coreutils)
 
 ## How to use
@@ -58,13 +58,13 @@ We will show how to run our LDA on an [UCI bag of words dataset](https://archive
 
 The make file has some useful features:
 
-- if you have Intel Compiler, then you can instead
+- if you have Intel&reg; C++ Compiler, then you can instead
 
    ```bash
      make intel
    ```
 
-- or if you want Intel's cross-file optimization (ipo), then hit
+- or if you want to use Intel&reg; C++ Compiler's cross-file optimization (ipo), then hit
    
    ```bash
      make inteltogether
@@ -83,6 +83,25 @@ The make file has some useful features:
    ```
 
 ## Performance
-Based on our evaluation F++LDA works the best in terms of both speed and perplexity on a held-out dataset. For example on Amazon EC2 c4.8xlarge, we obtained more than 24 million/tokens per second.
+Based on our evaluation F++LDA works the best in terms of both speed and perplexity on a held-out dataset. For example on Amazon EC2 c4.8xlarge, we obtained more than 25 million/tokens per second. Below we provide performance comparison against various inference procedures on publicaly available datasets.
+
+#### Datasets
+
+|  Dataset     |  V        |  L              |  D           |  L/V      |  L/D      |
+| ------------ | --------: | --------------: | -----------: | --------: | --------: |
+|  20 News     |  18,127   |  1,191,840	   |	11,266	   |	65.75    |  105.79   |
+|  HEP         |  37,729	|	1,548,935	   |	27,770	   |	41.05	   |	55.78 	|
+|  Reuters     |	69,973   |	2,624,373      |	14,377	   |	37.51	   |	182.54 	|
+|  Enron       |	28,102	|	6,412,174      |	40,861	   |	228.18   |	160.86   |
+|  ACM         |	133,325  |  12,258,310     |	132,032	   |	41.83    |  93.06    |
+|  NY Times    |  101,330  |  99,542,127     |  299,753     |  982.36   |  332.08   |
+|  PubMed      |  141,043  |  737,869,085    |  8,200,000   |  5,231.52	|	89.98    |
+|  Wikipedia   |	210,218  |  1,614,349,889  |  3,731,325   |  7,679.41	|	432.65 	|
+
+   Experimental datasets and their statistics. `V` denotes vocabulary size, `L` denotes the number of training tokens, `D` denotes
+   the number of documents, `L/V` indicates the average number of occurrences of a word, `L/D` indicates the average length of a
+   document.
+  
+#### log-Perplexity with time
 
 <img src=https://raw.githubusercontent.com/dmlc/experimental-lda/master/nytimes_llh_v_time.jpg width=400/>

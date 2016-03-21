@@ -1,11 +1,11 @@
 #!/bin/bash
 
-##Download NIPS from UCI repository
-#wget -P data/ https://archive.ics.uci.edu/ml/machine-learning-databases/bag-of-words/docword.nips.txt.gz
-#gunzip data/docword.nips.txt.gz
-#wget -P data/ https://archive.ics.uci.edu/ml/machine-learning-databases/bag-of-words/vocab.nips.txt
-#dist/preprocessing data/docword.nips.txt data/vocab.nips.txt data/nips 500 1
-#rm -rf data/docword.nips.txt data/vocab.nips.txt
+#Download NIPS from UCI repository
+wget -P data/ https://archive.ics.uci.edu/ml/machine-learning-databases/bag-of-words/docword.nips.txt.gz
+gunzip data/docword.nips.txt.gz
+wget -P data/ https://archive.ics.uci.edu/ml/machine-learning-databases/bag-of-words/vocab.nips.txt
+dist/preprocessing UCI data/docword.nips.txt data/vocab.nips.txt data/nips 500 1
+rm -rf data/docword.nips.txt data/vocab.nips.txt
 
 #Download ENRON from UCI repository
 wget -P data/ https://archive.ics.uci.edu/ml/machine-learning-databases/bag-of-words/docword.enron.txt.gz

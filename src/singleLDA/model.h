@@ -71,7 +71,7 @@ protected:
     unsigned n_topWords; 				// Number of top words to be printed per topic
     int init_train();					// init for training
     virtual int specific_init() { return 0; }	// if sampling algo need some specific inits
-    virtual int sampling(int m) { return 0; }	// sampling doc m outsourced to children
+    virtual int sampling(unsigned m) { return 0; }	// sampling doc m outsourced to children
     
     /****** Testing aux ******/
     unsigned test_n_iters;

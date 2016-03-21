@@ -345,7 +345,7 @@ int model::parse_args(std::vector<std::string> arguments)
             if (mdir == "")
                 mdir = "./";
 	}
-        else if (*arg == "--training-file")
+        else if (*arg == "--dataset")
         {
             name = *(++arg);
             if (name == "")
