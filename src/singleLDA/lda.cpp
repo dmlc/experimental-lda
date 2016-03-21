@@ -10,10 +10,8 @@ int simpleLDA::specific_init()
 
 int simpleLDA::sampling(unsigned m)
 {
-    auto n_ms = n_mks[m];
-    
     unsigned short kc = 0;
-    for (const auto& k : n_ms)
+    for (const auto& k : n_mks[m])
     {
         nd_m[k.idx] = k.val;
         rev_mapper[k.idx] = kc++;
