@@ -1,0 +1,144 @@
+INTEL
+Running LDA inference using aliasLDA
+For dataset nytimes
+For number of iterations 1000
+For number of topics 1000
+Using 60 sampler threads and 4 updater threads on bros
+Running LDA inference using aliasLDA
+Now randomly initialising model variables for training
+Initialising inference method specific data structures
+Initializing the alias tables ...
+We will perform a test on a heldout set.
+data dir = data/
+Training file = nytimes-0.dat
+Testing file = nytimes-test.dat
+model dir = out/nytimes/aliasLDA/Mar_21_2016_04.44.26/
+n_iters = 1000
+alpha = 50
+beta = 0.1
+K = 1000
+V = 101257
+Likelihood on held out documents: -9.26932 at time 0
+Sampling 1000 iterations!
+Likelihood on held out documents: -9.07552 at time 68479 in iteration 4
+Likelihood on held out documents: -8.40882 at time 138992 in iteration 12
+Likelihood on held out documents: -8.18679 at time 208811 in iteration 19
+Likelihood on held out documents: -8.10217 at time 270133 in iteration 27
+Likelihood on held out documents: -8.04965 at time 336810 in iteration 35
+Likelihood on held out documents: -8.01766 at time 401378 in iteration 44
+Likelihood on held out documents: -7.99666 at time 462050 in iteration 51
+Likelihood on held out documents: -7.98465 at time 525325 in iteration 61
+Likelihood on held out documents: -7.97508 at time 589750 in iteration 70
+Likelihood on held out documents: -7.96739 at time 653435 in iteration 79
+Likelihood on held out documents: -7.96094 at time 721709 in iteration 90
+Likelihood on held out documents: -7.9572 at time 784487 in iteration 98
+Likelihood on held out documents: -7.95354 at time 842080 in iteration 105
+Likelihood on held out documents: -7.95032 at time 908098 in iteration 114
+Likelihood on held out documents: -7.94951 at time 972294 in iteration 122
+Likelihood on held out documents: -7.94734 at time 1.03615e+06 in iteration 132
+Likelihood on held out documents: -7.94446 at time 1.10094e+06 in iteration 139
+Likelihood on held out documents: -7.94397 at time 1.164e+06 in iteration 148
+Likelihood on held out documents: -7.94248 at time 1.22663e+06 in iteration 157
+Likelihood on held out documents: -7.94049 at time 1.29566e+06 in iteration 167
+Likelihood on held out documents: -7.93915 at time 1.36112e+06 in iteration 175
+Likelihood on held out documents: -7.93751 at time 1.42734e+06 in iteration 186
+Likelihood on held out documents: -7.93784 at time 1.49326e+06 in iteration 195
+Likelihood on held out documents: -7.9367 at time 1.56312e+06 in iteration 206
+Likelihood on held out documents: -7.93512 at time 1.63313e+06 in iteration 217
+Likelihood on held out documents: -7.93367 at time 1.70417e+06 in iteration 225
+Likelihood on held out documents: -7.93453 at time 1.77435e+06 in iteration 234
+Likelihood on held out documents: -7.9333 at time 1.84126e+06 in iteration 242
+Likelihood on held out documents: -7.93224 at time 1.90697e+06 in iteration 252
+Likelihood on held out documents: -7.93328 at time 1.9739e+06 in iteration 262
+Likelihood on held out documents: -7.93296 at time 2.04127e+06 in iteration 272
+Likelihood on held out documents: -7.93278 at time 2.10887e+06 in iteration 280
+Likelihood on held out documents: -7.93184 at time 2.17068e+06 in iteration 288
+Likelihood on held out documents: -7.93313 at time 2.2401e+06 in iteration 296
+Likelihood on held out documents: -7.93169 at time 2.30931e+06 in iteration 304
+Likelihood on held out documents: -7.93236 at time 2.37949e+06 in iteration 315
+Likelihood on held out documents: -7.9306 at time 2.45042e+06 in iteration 324
+Likelihood on held out documents: -7.9311 at time 2.52576e+06 in iteration 334
+Likelihood on held out documents: -7.93209 at time 2.59195e+06 in iteration 343
+Likelihood on held out documents: -7.93041 at time 2.65809e+06 in iteration 352
+Likelihood on held out documents: -7.92697 at time 2.72628e+06 in iteration 360
+Likelihood on held out documents: -7.92807 at time 2.79351e+06 in iteration 371
+Likelihood on held out documents: -7.92752 at time 2.8544e+06 in iteration 380
+Likelihood on held out documents: -7.92665 at time 2.91719e+06 in iteration 391
+Likelihood on held out documents: -7.92626 at time 2.98033e+06 in iteration 402
+Likelihood on held out documents: -7.92602 at time 3.04875e+06 in iteration 414
+Likelihood on held out documents: -7.92642 at time 3.11458e+06 in iteration 425
+Likelihood on held out documents: -7.92567 at time 3.18002e+06 in iteration 437
+Likelihood on held out documents: -7.92611 at time 3.24795e+06 in iteration 449
+Likelihood on held out documents: -7.92431 at time 3.30865e+06 in iteration 459
+Likelihood on held out documents: -7.92481 at time 3.3714e+06 in iteration 469
+Likelihood on held out documents: -7.92337 at time 3.43506e+06 in iteration 480
+Likelihood on held out documents: -7.92394 at time 3.49891e+06 in iteration 491
+Likelihood on held out documents: -7.92485 at time 3.56459e+06 in iteration 502
+Likelihood on held out documents: -7.92402 at time 3.63013e+06 in iteration 513
+Likelihood on held out documents: -7.92449 at time 3.69026e+06 in iteration 523
+Likelihood on held out documents: -7.92299 at time 3.75674e+06 in iteration 534
+Likelihood on held out documents: -7.92331 at time 3.82566e+06 in iteration 546
+Likelihood on held out documents: -7.92331 at time 3.89524e+06 in iteration 558
+Likelihood on held out documents: -7.92305 at time 3.96408e+06 in iteration 567
+Likelihood on held out documents: -7.92295 at time 4.03345e+06 in iteration 575
+Likelihood on held out documents: -7.92254 at time 4.10028e+06 in iteration 583
+Likelihood on held out documents: -7.9223 at time 4.1609e+06 in iteration 591
+Likelihood on held out documents: -7.92196 at time 4.22083e+06 in iteration 599
+Likelihood on held out documents: -7.92347 at time 4.28332e+06 in iteration 607
+Likelihood on held out documents: -7.92272 at time 4.34582e+06 in iteration 616
+Likelihood on held out documents: -7.92142 at time 4.40843e+06 in iteration 626
+Likelihood on held out documents: -7.9225 at time 4.47474e+06 in iteration 638
+Likelihood on held out documents: -7.92086 at time 4.54095e+06 in iteration 649
+Likelihood on held out documents: -7.92187 at time 4.60516e+06 in iteration 660
+Likelihood on held out documents: -7.92097 at time 4.66748e+06 in iteration 671
+Likelihood on held out documents: -7.92038 at time 4.73068e+06 in iteration 682
+Likelihood on held out documents: -7.92061 at time 4.79542e+06 in iteration 693
+Likelihood on held out documents: -7.91978 at time 4.86081e+06 in iteration 704
+Likelihood on held out documents: -7.92001 at time 4.92448e+06 in iteration 715
+Likelihood on held out documents: -7.92018 at time 4.9841e+06 in iteration 724
+Likelihood on held out documents: -7.91881 at time 5.04491e+06 in iteration 734
+Likelihood on held out documents: -7.91896 at time 5.11023e+06 in iteration 746
+Likelihood on held out documents: -7.9175 at time 5.17812e+06 in iteration 758
+Likelihood on held out documents: -7.9187 at time 5.24182e+06 in iteration 768
+Likelihood on held out documents: -7.9186 at time 5.30896e+06 in iteration 777
+Likelihood on held out documents: -7.919 at time 5.37497e+06 in iteration 785
+Likelihood on held out documents: -7.9185 at time 5.44114e+06 in iteration 793
+Likelihood on held out documents: -7.91796 at time 5.50878e+06 in iteration 801
+Likelihood on held out documents: -7.91797 at time 5.5766e+06 in iteration 809
+Likelihood on held out documents: -7.91754 at time 5.64292e+06 in iteration 818
+Likelihood on held out documents: -7.91768 at time 5.70744e+06 in iteration 826
+Likelihood on held out documents: -7.9183 at time 5.7739e+06 in iteration 834
+Likelihood on held out documents: -7.91612 at time 5.84064e+06 in iteration 842
+Likelihood on held out documents: -7.91734 at time 5.90613e+06 in iteration 850
+Likelihood on held out documents: -7.91721 at time 5.97168e+06 in iteration 858
+Likelihood on held out documents: -7.91675 at time 6.03901e+06 in iteration 866
+Likelihood on held out documents: -7.91559 at time 6.10235e+06 in iteration 875
+Likelihood on held out documents: -7.91666 at time 6.16235e+06 in iteration 884
+Likelihood on held out documents: -7.91503 at time 6.22119e+06 in iteration 892
+Likelihood on held out documents: -7.91538 at time 6.27904e+06 in iteration 900
+Likelihood on held out documents: -7.91621 at time 6.33934e+06 in iteration 908
+Likelihood on held out documents: -7.91548 at time 6.40228e+06 in iteration 916
+Likelihood on held out documents: -7.91505 at time 6.46147e+06 in iteration 924
+Likelihood on held out documents: -7.91568 at time 6.52397e+06 in iteration 932
+Likelihood on held out documents: -7.91517 at time 6.58788e+06
+Likelihood on held out documents: -7.91493 at time 6.65164e+06
+Likelihood on held out documents: -7.91475 at time 6.70941e+06
+Likelihood on held out documents: -7.91535 at time 6.76438e+06
+Likelihood on held out documents: -7.91521 at time 6.81453e+06
+Likelihood on held out documents: -7.91466 at time 6.85987e+06
+Likelihood on held out documents: -7.91534 at time 6.89896e+06
+Likelihood on held out documents: -7.91454 at time 6.93249e+06
+Likelihood on held out documents: -7.9154 at time 6.96079e+06
+Likelihood on held out documents: -7.91452 at time 6.98564e+06
+Likelihood on held out documents: -7.91408 at time 7.01023e+06
+Likelihood on held out documents: -7.91541 at time 7.03307e+06
+Likelihood on held out documents: -7.91438 at time 7.05408e+06
+Gibbs sampling completed!
+Saving the final model!
+others done
+phi done
+llh done
+time done
+llh done
+twords done
+Likelihood on held out documents: -7.91451 at time 7.05408e+06
