@@ -1,0 +1,8 @@
+alpha=50
+beta=0.1
+num-topics=1000
+num-docs=298252
+num-words=101257
+num-iters=1000
+num-sampling-threads=52
+num-table-threads=12
