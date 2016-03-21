@@ -119,10 +119,10 @@ int sparseLDA::specific_init()
     ssum = 0;
     for (unsigned short k = 0; k < K; ++k)
     {
-        q1[k] = alpha / (n_k[k] + Vbeta);
+        q1[k] = alphaK / (n_k[k] + Vbeta);
         ssum += 1 / (n_k[k] + Vbeta);
     }
-    ssum *= alpha * beta;		
+    ssum *= alphaK * beta;		
     return 0;
 }
 
@@ -150,11 +150,11 @@ int sparseLDA::sampling(unsigned m)
 
         // update the bucket sums
         double denom = n_k[topic] + Vbeta;
-        ssum -= (alpha * beta) / (denom + 1);
-        ssum += (alpha * beta) / denom;
+        ssum -= (alphaK * beta) / (denom + 1);
+        ssum += (alphaK * beta) / denom;
         rsum -= (beta + nd_m[topic] * beta) / (denom + 1);
         rsum += (nd_m[topic] * beta) / denom;
-        q1[topic] = (alpha + nd_m[topic]) / denom;
+        q1[topic] = (alphaK + nd_m[topic]) / denom;
 
         ////  Divide the full sampling mass into three �buckets.�[s | r | q]
         qsum = 0;
@@ -172,7 +172,7 @@ int sparseLDA::sampling(unsigned m)
         if (u < ssum)	//�smoothing only� bucket
         {
             // In this case, we can step through each topic, calculating and adding up	for that topic, until we reach a value greater than u
-            u /= alpha * beta;
+            u /= alphaK * beta;
             for (topic = -1; u > 0; u -= 1 / (n_k[++topic] + Vbeta));
         }
         else if (u < ssum + rsum) //�document topic� bucket
@@ -259,11 +259,11 @@ int sparseLDA::sampling(unsigned m)
 
         //update the bucket sums
         denom = (n_k[topic] + Vbeta);
-        ssum -= (alpha * beta) / denom;
-        ssum += (alpha * beta) / (denom + 1);
+        ssum -= (alphaK * beta) / denom;
+        ssum += (alphaK * beta) / (denom + 1);
         rsum -= (nd_m[topic] * beta) / denom;
         rsum += (beta + nd_m[topic] * beta) / (denom + 1);
-        q1[topic] = (alpha + nd_m[topic] + 1) / (denom + 1);
+        q1[topic] = (alphaK + nd_m[topic] + 1) / (denom + 1);
 
         // add newly estimated z_i to count variables
         add_to_topic( w, m, topic );
@@ -319,7 +319,7 @@ int aliasLDA::sampling(unsigned m)
         }
 
         {
-            double select_pr = psum / (psum + alpha*q[w].wsum);
+            double select_pr = psum / (psum + alphaK*q[w].wsum);
 
             //MHV to draw new topic
             for (int r = 0; r < MH_STEPS; ++r)
@@ -348,10 +348,10 @@ int aliasLDA::sampling(unsigned m)
                     //2. Find acceptance probability
                     double temp_old = (n_wk[w][topic] + beta) / (n_k[topic] + Vbeta);
                     double temp_new = (n_wk[w][new_topic] + beta) / (n_k[new_topic] + Vbeta);
-                    double acceptance = (nd_m[new_topic] + alpha) / (nd_m[topic] + alpha)
+                    double acceptance = (nd_m[new_topic] + alphaK) / (nd_m[topic] + alphaK)
                             *temp_new / temp_old
-                            *(nd_m[topic] * temp_old + alpha*q[w].w[topic])
-                            / (nd_m[new_topic] * temp_new + alpha*q[w].w[new_topic]);
+                            *(nd_m[topic] * temp_old + alphaK*q[w].w[topic])
+                            / (nd_m[new_topic] * temp_new + alphaK*q[w].w[new_topic]);
 
 
                     //3. Compare against uniform[0,1]
@@ -431,7 +431,7 @@ int FTreeLDA::sampling(unsigned m)
             p[ii++] = psum;
         }
 
-            double u = rng_.rand_double() * (psum + alpha*trees[w].w[1]);
+            double u = rng_.rand_double() * (psum + alphaK*trees[w].w[1]);
 
             if (u < psum)
             {
@@ -509,7 +509,7 @@ int forestLDA::sampling(unsigned m)
             p[ii++] = psum;
         }
 
-        double u = rng_.rand_double() * (psum + alpha*q[w].wsum);
+        double u = rng_.rand_double() * (psum + alphaK*q[w].wsum);
 
         if (u < psum)
         {
@@ -576,7 +576,7 @@ int lightLDA::sampling(unsigned m)
         rev_mapper[k.idx] = kc++;
     }
 
-    double sumPd = trngdata->docs[m]->length + K * alpha;
+    double sumPd = trngdata->docs[m]->length + alpha;
 
     for (unsigned n = 0; n < trngdata->docs[m]->length; ++n)
     {
@@ -602,17 +602,17 @@ int lightLDA::sampling(unsigned m)
                 {
                     // draw uniformly
                     u -= trngdata->docs[m]->length;
-                    u /= alpha;
+                    u /= alphaK;
                     new_topic = (unsigned short)(u); // pick_a_number(0,trngdata->docs[m]->length-1); (int)(utils::unif01()*ptrndata->docs[m]->length);
                 }
 
                 if (topic != new_topic)
                 {
                     //2. Find acceptance probability
-                    double temp_old = (nd_m[topic] + alpha) * (n_wk[w][topic] + beta) / (n_k[topic] + Vbeta) ;
-                    double temp_new = (nd_m[new_topic] + alpha) * (n_wk[w][new_topic] + beta) / (n_k[new_topic] + Vbeta);
-                    double prop_old = (topic==old_topic) ? (nd_m[topic] + 1 + alpha) : (nd_m[topic] + alpha);
-                    double prop_new = (new_topic==old_topic) ? (nd_m[new_topic] + 1 + alpha) : (nd_m[new_topic] + alpha);
+                    double temp_old = (nd_m[topic] + alphaK) * (n_wk[w][topic] + beta) / (n_k[topic] + Vbeta) ;
+                    double temp_new = (nd_m[new_topic] + alphaK) * (n_wk[w][new_topic] + beta) / (n_k[new_topic] + Vbeta);
+                    double prop_old = (topic==old_topic) ? (nd_m[topic] + 1 + alphaK) : (nd_m[topic] + alphaK);
+                    double prop_new = (new_topic==old_topic) ? (nd_m[new_topic] + 1 + alphaK) : (nd_m[new_topic] + alphaK);
                     double acceptance = (temp_new * prop_old) / (temp_old *prop_new);
 
                     //3. Compare against uniform[0,1]
@@ -636,8 +636,8 @@ int lightLDA::sampling(unsigned m)
                 if (topic != new_topic)
                 {
                     //2. Find acceptance probability
-                    double temp_old = (nd_m[topic] + alpha) * (n_wk[w][topic] + beta) / (n_k[topic] + Vbeta);
-                    double temp_new = (nd_m[new_topic] + alpha) * (n_wk[w][new_topic] + beta) / (n_k[new_topic] + Vbeta);
+                    double temp_old = (nd_m[topic] + alphaK) * (n_wk[w][topic] + beta) / (n_k[topic] + Vbeta);
+                    double temp_new = (nd_m[new_topic] + alphaK) * (n_wk[w][new_topic] + beta) / (n_k[new_topic] + Vbeta);
                     double acceptance =  (temp_new * q[w].w[topic]) / (temp_old * q[w].w[new_topic]);
 
                     //3. Compare against uniform[0,1]

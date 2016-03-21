@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DATASETS="nytimes" 
+DATASETS="enron" 
 METHODS="lightLDA"
 NUM_ITER="100"
 NUM_TOPICS="100"
