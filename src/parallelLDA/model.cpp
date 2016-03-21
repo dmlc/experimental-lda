@@ -300,6 +300,8 @@ int model::read_data()
 	std::cout << "beta = " << beta << std::endl;
 	std::cout << "K = " << K << std::endl;
 	std::cout << "V = " << V << std::endl;
+	std::cout << "NST = " << nst << std::endl;
+	std::cout << "NTT = " << ntt << std::endl;
 
 	return 0;
 }
@@ -376,17 +378,14 @@ int model::parse_args(std::vector<std::string> arguments)
                 if (_n_topWords > 0)
                     n_topWords = _n_topWords;
         }
-        else if (*arg == "--num-sampling-threads")
+        else if (*arg == "--num-threads")
         {
-                int _nst = std::stoi(*(++arg));
-                if(_nst > 0)
-                    nst = _nst;
-        }
-        else if (*arg == "--num-table-threads")
-        {
-                int _ntt = std::stoi(*(++arg));
-                if (_ntt > 0)
-                    ntt = _ntt;
+                int _nt = std::stoi(*(++arg));
+                if(_nt > 0)
+		{
+                    ntt = num_table_threads((unsigned)_nt);
+		    nst = _nt - ntt;
+		}
         }
     }
 

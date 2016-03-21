@@ -20,6 +20,7 @@ inteltogether: dir compile
 
 dir:
 	@echo Setting up directories
+	@mkdir dist
 	@mkdir -p $(BUILDDIR)
 
 compile: $(SOURCES)

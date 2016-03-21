@@ -33,6 +33,7 @@ public:
 	int specific_init();
 	int sampling(unsigned i);
 	int updater(unsigned i);
+	unsigned num_table_threads(unsigned nt) { return 3*nt/16; }
 };
 
 class aliasLDA : public model
@@ -55,6 +56,7 @@ public:
 	int specific_init();
 	int sampling(unsigned i);
 	int updater(unsigned i);
+	unsigned num_table_threads(unsigned nt) { return 3*nt/16; }
 
 	FTreeLDA()
 	{

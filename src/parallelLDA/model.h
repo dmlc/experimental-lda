@@ -111,6 +111,7 @@ protected:
     /****** Concurency parameters ******/
     unsigned nst;						// number of sampling threads
     unsigned ntt;						// number of table updating threads
+    virtual unsigned num_table_threads(unsigned nt) { return nt/16; }
     volatile bool inf_stop;					// flag for stopping inference
     unsigned *current_iter;					// current iteration of some thread
     std::mutex t_mtx;				// lock for n_k
