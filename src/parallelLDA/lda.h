@@ -6,6 +6,7 @@
 #include <chrono>
 #include <vector>
 #include <queue>
+#include <shared_mutex>
 
 #include "model.h"
 #include "../commons/utils.h"
@@ -33,7 +34,7 @@ public:
 	int specific_init();
 	int sampling(unsigned i);
 	int updater(unsigned i);
-	unsigned num_table_threads(unsigned nt) { return 3*nt/16; }
+	unsigned num_table_threads(unsigned nt) { return nt/4; }
 };
 
 class aliasLDA : public model

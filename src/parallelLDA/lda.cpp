@@ -159,7 +159,7 @@ int sparseLDA::sampling(unsigned i)
         for (unsigned m = i; m < M; m+=nst)
         {
             //synchronization
-            if (m % 100 == i)
+            if (m % 10 == i)
             {
                 ssum = 0;
                 for (unsigned short k = 0; k < K; ++k)
@@ -249,8 +249,8 @@ int sparseLDA::sampling(unsigned i)
                 //update the bucket sums
                 nwsum_local[topic] += 1;
                 denom = nwsum_local[topic] + Vbeta;
-                ssum -= (alpha * beta) / (denom - 1);
-                ssum += (alpha * beta) / denom;
+                ssum -= (alphaK * beta) / (denom - 1);
+                ssum += (alphaK * beta) / denom;
                 //rsum += beta / denom;
 
                 // add newly estimated z_i to count variables
@@ -259,15 +259,14 @@ int sparseLDA::sampling(unsigned i)
                     if(rev_mapper[topic] == K)
                     {
                         rev_mapper[topic] = n_mks[m].push_back(topic, 1);
-                	rsum -= (beta) / (denom - 1);
-                        rsum += (beta + beta) / denom;
+                        rsum += beta / denom;
                         q1[topic] = (alphaK + 1) / denom;
                     }
                     else
                     {
                         nd_mk = n_mks[m].increment(rev_mapper[topic]);
-                        rsum -= (nd_mk * beta) / (denom - 1);
-                        rsum += (beta + nd_mk * beta) / denom;
+                        rsum -= (nd_mk * beta - beta) / (denom - 1);
+                        rsum += (nd_mk * beta) / denom;
                 	q1[topic] = (alphaK + nd_mk) / denom;
                     }
                     //nd_m[topic] += 1;
@@ -283,8 +282,8 @@ int sparseLDA::sampling(unsigned i)
                 else
                 {
                     nd_mk = n_mks[m].increment(rev_mapper[topic]);
-                    rsum -= (nd_mk * beta) / (denom - 1);
-                    rsum += (beta + nd_mk * beta) / denom;
+                    rsum -= (nd_mk * beta - beta) / (denom - 1);
+                    rsum += (nd_mk * beta) / denom;
                     q1[topic] = (alphaK +  nd_mk) / denom;
                     //nd_m[topic] += 1;
                 }
@@ -400,22 +399,23 @@ int aliasLDA::sampling(unsigned i)
                     p[ii++] = psum;
                 }
 
-                double select_pr = psum / (psum + alphaK*q[w].wsum);
+                double p_tot = (psum + alphaK*q[w].wsum);
 
                 //MHV to draw new topic
                 for (unsigned r = 0; r < MH_STEPS; ++r)
                 {
+		    double u = rng_.rand_double() * p_tot;			
                     //1. Flip a coin
-                    if (rng_.rand_double() < select_pr)
+                    if (rng_.rand_double() * p_tot < psum)
                     {
-                        double u = rng_.rand_double() * psum;
+                        //double u = rng_.rand_double() * psum;
                         new_topic = std::lower_bound(p,p+ii,u) - p;
                         new_topic = n_mks[m].idx_in(new_topic);
                     }
                     else
                     {
                         q[w].noSamples++;
-                        if(q[w].noSamples > K>>1 )
+                        if(q[w].noSamples > K)
                         {	
                             if(mtx[w].try_lock())
                             {
@@ -432,14 +432,13 @@ int aliasLDA::sampling(unsigned i)
 		    if (topic != new_topic)
                     {
                             //2. Find acceptance probability
-                            double temp_old = (n_wk[w][topic] + beta) / (n_k[topic] + Vbeta);
-                            double temp_new = (n_wk[w][new_topic] + beta) / (n_k[new_topic] + Vbeta);
+                	    double fkw_old = (n_wk[w][topic] + beta) / (n_k[topic] + Vbeta);
+                            double fkw_new = (n_wk[w][new_topic] + beta) / (n_k[new_topic] + Vbeta);
                             //double temp_old = (old_topic!=topic) ? (nw[w][topic] + beta) / (nwsum[topic] + Vbeta) : (nw[w][topic] - 1 + beta) / (nwsum[topic] - 1 + Vbeta);
                             //double temp_new = (old_topic!=new_topic) ? (nw[w][new_topic] + beta) / (nwsum[new_topic] + Vbeta) : (nw[w][new_topic] - 1 + beta) / (nwsum[new_topic] - 1 + Vbeta);
-                            double acceptance = (nd_m[new_topic] + alphaK) / (nd_m[topic] + alphaK)
-                                    *temp_new / temp_old
-                                    *(nd_m[topic] * temp_old + alphaK*q[w].w[topic])
-                                    / (nd_m[new_topic] * temp_new + alphaK*q[w].w[new_topic]);
+                            double acceptance = (nd_m[new_topic] + alphaK) / (nd_m[topic] + alphaK) * fkw_new / fkw_old
+                                    *(nd_m[topic] * fkw_old + alphaK*q[w].w[topic])
+                                    / (nd_m[new_topic] * fkw_new + alphaK*q[w].w[new_topic]);
                             //3. Compare against uniform[0,1]
                             if (rng_.rand_double() < acceptance)
                                     topic = new_topic;
