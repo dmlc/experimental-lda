@@ -97,7 +97,7 @@ public:
 
 		while ((rp + 1) % MAX == fp)
 		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(137));
+			std::this_thread::sleep_for(std::chrono::milliseconds(37));
 			//std::cout << "Contention: Probably you should increase number of updating threads!" << std::endl;
 		}
 		cqueue_arr[rp] = item;
