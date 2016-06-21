@@ -1,0 +1,9 @@
+Running LDA inference using FTreeLDA
+For dataset wikiLong
+For number of iterations 100
+For number of topics 250
+Using 32 threads total on Amazon EC2 c4.8xlarge
+Running LDA inference using FTreeLDA
+Now randomly initialising model variables for training
+Initialising inference method specific data structures
+Initializing the Fenwich trees ...
