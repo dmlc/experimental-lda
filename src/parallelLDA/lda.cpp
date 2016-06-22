@@ -404,9 +404,9 @@ int aliasLDA::sampling(unsigned i)
                 //MHV to draw new topic
                 for (unsigned r = 0; r < MH_STEPS; ++r)
                 {
-		    double u = rng_.rand_double() * p_tot;			
+		    double u = rng_.rand_double() * p_tot;
                     //1. Flip a coin
-                    if (rng_.rand_double() * p_tot < psum)
+		    if ( u < psum )
                     {
                         //double u = rng_.rand_double() * psum;
                         new_topic = std::lower_bound(p,p+ii,u) - p;
